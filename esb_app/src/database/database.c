@@ -54,7 +54,6 @@ int insert_in_esb_request(BMD * bmd) {
     /*sql query to insert in table*/
     char * status = "available";
     char query1[5000];
-    //int check = 1; //checking for duplicacy
 
     sprintf(query1, INSERT_IN_ESB_REQUEST,
         bmd -> bmd_envelope -> Sender,
