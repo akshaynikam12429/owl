@@ -1,7 +1,7 @@
 
     DROP DATABASE IF EXISTS `esb`;
 
-    CREATE DATABSE IF NOT EXISTS `esb`; 
+    CREATE DATABASE IF NOT EXISTS `esb`; 
 
     USE `esb`;
 
