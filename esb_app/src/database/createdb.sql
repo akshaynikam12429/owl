@@ -17,7 +17,7 @@
         `reference_id` VARCHAR(45) NOT NULL,
         `message_id` VARCHAR(45) NOT NULL COMMENT 'A unique ID for the message instance.',
         `received_on` DATETIME NOT NULL,
-        `data_location` TEXT NULL,
+        `data_location` TEXT,
         `status` VARCHAR(20) NOT NULL,
-        `status_details` TEXT NULL
+        `status_details` TEXT 
     );
