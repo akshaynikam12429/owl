@@ -2,7 +2,7 @@
 #include <unistd.h>
 #include "esb.h"
 
-int fetch_new_request_from_db(bmd *request)
+int fetch_new_request_from_db(BMD *request)
 {
     /** 
      * TODO: query the DB for this, and populate the 
