@@ -52,7 +52,7 @@ int queue_the_request(BMD * bmd)
    BMD * bmd;
    bmd = parse_bmd_xml(bmd_file_path);
 
-   /* // Step 2:
+    // Step 2:
    if (!is_bmd_valid(bmd))
     {
         //TODO: Process the error case
@@ -63,7 +63,7 @@ int queue_the_request(BMD * bmd)
     {
         // Step 3:
         status = queue_the_request(bmd);
-    }*/
-    //status = queue_the_request(bmd);
+    }
+    
     return status;
 }
