@@ -118,6 +118,42 @@ BMD * parse_bmd_xml(char* bmd_file_path) {
 {
     int valid = 1; // 1 => vaild, -1 => invalid
     // TODO: Implement the validation logic here
+     
+      if(*(bmd->bmd_envelope->MessageID)==0)
+    {
+        printf("MessageId is mandatory (missing in BMD file)\n");
+        valid = 0;
+    }
+     if(*(bmd->bmd_envelope->MessageType)==0)
+    {
+        printf("MessageType is mandatory (missing in BMD file)\n");
+        valid = 0;
+
+    } if(*(bmd->bmd_envelope->Sender)==0)
+    {
+        printf("Sender Id is mandatory (missing in BMD file)\n");
+        valid = 0;
+
+    } if(*(bmd->bmd_envelope->Destination)== 0)
+    {      
+        printf("Destination Id is mandatory (missing in BMD file)\n");
+        valid = 0;
+
+    } if(*(bmd->bmd_envelope->CreationDateTime)== 0)
+    {
+        printf("CreationDateTime is mandatory (missing in BMD file)\n");
+        valid = 0;
+
+    } if(*(bmd->bmd_envelope->Signature)== 0)
+    {
+        printf("Signature is mandatory (missing in BMD file)\n");
+        valid = 0;
+
+    } if(*(bmd->bmd_envelope->ReferenceID)== 0)
+    {
+        printf("ReferenceID is mandatory (missing in BMD file)\n");
+        valid = 0;
+    }
 
     return valid;
 }
