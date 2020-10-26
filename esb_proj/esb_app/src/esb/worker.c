@@ -26,7 +26,7 @@ void *poll_database_for_new_requets(void *vargp)
          * Step 2: Query the esb_requests table to see if there
          * are any newly received BMD requets.
          */
-        bmd req;
+        BMD req;
         /**
          * Step 3:
          */
