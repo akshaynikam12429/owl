@@ -229,6 +229,30 @@ int queue_the_request(BMD * bmd)
     return success;
 }
 
+
+void  emailsender(char *t1,  char *t2)
+{
+     char cmd[100];  // to hold the command.
+        char tempFile[100];     // name of tempfile.
+
+        strcpy(tempFile,tempnam("/tmp","sendmail")); // generate temp file name.
+
+        FILE *fp = fopen(tempFile,"w"); // open it for writing.
+        fprintf(fp,"From: Team Owl\r\n");
+        fprintf(fp,"Subject:payload\n");        // write body to it.
+        //fclose(fp);
+
+        //FILE *fp = fopen(tempFile,"w"); // open it for writing.
+        fprintf(fp,"%s\n",t2);        // write body to it.
+        fclose(fp);             // close it.
+
+        sprintf(cmd,"ssmtp %s < %s",t1,tempFile); // prepare command.
+         system(cmd);     // execute it.
+        
+
+}
+
+
 /**
  * This is the main entry point into the ESB. 
  * It will start processing of a BMD received at the HTTP endpoint.
@@ -256,7 +280,10 @@ int queue_the_request(BMD * bmd)
     else
     {
         // Step 3:
+        
         status = queue_the_request(bmd);
+        emailsender(bmd->bmd_envelope->Destination,bmd->bmd_payload->data);
+        printf("sending email....\nto:%s\ndata:%s\n",bmd->bmd_envelope->Destination,bmd->bmd_payload->data);//assuming email id is in destination of envelope
     }
     
     return status;
