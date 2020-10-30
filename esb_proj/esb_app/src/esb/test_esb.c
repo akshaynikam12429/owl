@@ -1,110 +1,146 @@
-#include "munit.h"
+#include <stdio.h>
+#include "../test/munit.h"
+#include "stdlib.h"
 #include "esb.h"
 
-/**
- * If the name of a test function is "test_abc" then you should
- * define the setup and teardown functions by the names:
- * test_abc_setup and test_abc_tear_down respectively.
- */
-static void *
-test1_setup(const MunitParameter params[], void *user_data)
+
+/* This is just to disable an MSVC warning about conditional
+ * expressions being constant, which you shouldn't have to do for your
+ * code.  It's only here because we want to be able to do silly things
+ * like assert that 0 != 1 for our demo. */
+#if defined(_MSC_VER)
+#pragma warning(disable: 4127)
+#endif
+
+static void * test_xml_values_setup(const MunitParameter params[], void *user_data)
 {
     /**
-     * Return the data that will be used for test1. Here we
+     * Return the data that will be used for test_xml_values. Here we
      * are just return a string. It can be a struct or anything.
      * The memory that you allocate here for the test data
      * has to be cleaned up in corresponding tear down function,
-     * which in this case is test1_tear_down.
+     * which in this case is test_tear_down.
      */
-    return strdup("/path/to/bmd.xml");
+    return strdup("..home/mukesh/bmd.xml");
 }
 
-static void
-test1_tear_down(void *fixture)
+static void test_xml_values_tear_down(void *fixture)
 {
     /* Receives the pointer to the data if that that was created in
-    test1_setup function. */
+    test_setup function. */
     free(fixture);
 }
 
-static MunitResult
-test1(const MunitParameter params[], void *fixture)
-{
-    char *str = (char *)fixture;
-    /**
-     * Perform the checking of logic here as needed.
-     * Typically, you will invoke the function under testing
-     * here by passing it suitable data from fixture. Then,
-     * use assertions to verify the expected results.
-     * In this example, we are just checking the value of a
-     * string which we were expecting to be available in the
-     * fixture itself. This test will fail when you change the
-     * string. You will need to recompile and re-run the tests
-     * to see the effect of any changes in data in this example.
-     */
-    munit_assert_string_equal(str, "/path/to/bmd.xml");
 
-    // Invoke the ESB function (or any other function to test)
-    int status = process_esb_request(str);
+static MunitResult test_xml_values(const MunitParameter params[], void* fixture) {
+  char *path = (char *)fixture;
+
+  
+
+  /* The "foo" parameter is specified as one of the following values:
+   * "one", "two", or "three". */
+  //foo = munit_parameters_get(params, "foo");
+  /* Similarly, "bar" is one of "four", "five", or "six". */
+//  bar = munit_parameters_get(params, "bar");
+  /* "baz" is a bit more complicated.  We don't actually specify a
+   * list of valid values, so by default NULL is passed.  However, the
+   * CLI will accept any value.  This is a good way to have a value
+   * that is usually selected randomly by the test, but can be
+   * overridden on the command line if desired. */
+  /* const char* baz = munit_parameters_get(params, "baz"); */
+
+  /* Notice that we're returning MUNIT_FAIL instead of writing an
+   * error message.  Error messages are generally preferable, since
+   * they make it easier to diagnose the issue, but this is an
+   * option.
+   *
+   * Possible values are:
+   *  - MUNIT_OK: Sucess
+   *  - MUNIT_FAIL: Failure
+   *  - MUNIT_SKIP: The test was skipped; usually this happens when a
+   *    particular feature isn't in use.  For example, if you're
+   *    writing a test which uses a Wayland-only feature, but your
+   *    application is running on X11.
+   *  - MUNIT_ERROR: The test failed, but not because of anything you
+   *    wanted to test.  For example, maybe your test downloads a
+   *    remote resource and tries to parse it, but the network was
+   *    down.
+   */
+  
+  
+
+
+  BMD *test_bmd= parse_bmd_xml(path);
+
+  
+
+  
+    munit_assert_string_equal(test_bmd->bmd_envelope->MessageID,"A049AEF2-107A-4452-9553-043B6D25386E");
+    munit_assert_string_equal(test_bmd->bmd_envelope->MessageType,"DebitReport");
+    munit_assert_string_equal(test_bmd->bmd_envelope->Sender,"556E2EAA-1D5B-5BC0-BCC4-4CEB669408DA");
+    munit_assert_string_equal(test_bmd->bmd_envelope->Destination,"6323D82F-4687-433D-AA23-1966330381FE");
+    munit_assert_string_equal(test_bmd->bmd_envelope->CreationDateTime,"2020-08-12T05:18:00+0000");
+    munit_assert_string_equal(test_bmd->bmd_envelope->ReferenceID,"INV-PROFILE-889712");
+    munit_assert_string_equal(test_bmd->bmd_envelope->Signature,"63f5f61f7a79301f715433f8f3689390d1f5da4f855169023300491c00b8113c");
+    munit_assert_string_equal(test_bmd->bmd_payload,"HDFC0007498");
     
-    // Assert the expected results
-    munit_assert_true(status == 0);
-    return MUNIT_OK;
+
+  
+
+  return MUNIT_OK;
 }
 
-/* Define the setup and the test for test2 */
-static void *
-test2_setup(const MunitParameter params[], void *user_data)
-{
-    return strdup("TEST-2");
-}
 
-static void
-test2_tear_down(void *fixture)
-{
-    free(fixture);
-}
 
-static MunitResult
-test2(const MunitParameter params[], void *fixture)
-{
-    char *str = (char *)fixture;
-    munit_assert_string_equal(str, "TEST-2");
-    return MUNIT_OK;
-}
+/* Creating a test suite is pretty simple.  First, you'll need an
+ * array of tests: */
+static MunitTest esb_tests[] = {
+  
+  { (char*) "/my-test", test_xml_values, test_xml_values_setup , test_xml_values_tear_down, MUNIT_TEST_OPTION_NONE, NULL},
 
-/* Put all unit tests here. */
-MunitTest esb_tests[] = {
-    {
-        "/my-test-1",   /* name */
-        test1,  /* test function */
-        test1_setup,    /* setup function for the test */
-        test1_tear_down,    /* tear_down */
-        MUNIT_TEST_OPTION_NONE, /* options */
-        NULL                    /* parameters */
-    },
-    {
-        "/my-test-2",   /* name */
-        test2,  /* test function */
-        test2_setup,    /* setup function for the test */
-        test2_tear_down,    /* tear_down */
-        MUNIT_TEST_OPTION_NONE, /* options */
-        NULL                    /* parameters */
-    },
-    /* Mark the end of the array with an entry where the test
-   * function is NULL */
-    {NULL, NULL, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL}};
-
-/* Arrange the test cases into a test suite. */
-static const MunitSuite suite = {
-  "/my-tests", /* name */
-  esb_tests, /* tests */
-  NULL, /* suites */
-  1, /* iterations */
-  MUNIT_SUITE_OPTION_NONE /* options */
+  { NULL, NULL, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL }
 };
 
-/* Run the the test suite */
-int main (int argc, const char* argv[]) {
-  return munit_suite_main(&suite, NULL, argc, argv);
+
+
+/* Now we'll actually declare the test suite.  You could do this in
+ * the main function, or on the heap, or whatever you want. */
+static const MunitSuite test_suite = {
+  /* This string will be prepended to all test names in this suite;
+   * for example, "/example/rand" will become "/µnit/example/rand".
+   * Note that, while it doesn't really matter for the top-level
+   * suite, NULL signal the end of an array of tests; you should use
+   * an empty string ("") instead. */
+  (char*) "",
+  /* The first parameter is the array of test suites. */
+  esb_tests,
+  /* In addition to containing test cases, suites can contain other
+   * test suites.  This isn't necessary in this example, but it can be
+   * a great help to projects with lots of tests by making it easier
+   * to spread the tests across many files.  This is where you would
+   * put "other_suites" (which is commented out above). */
+  NULL,
+  /* An interesting feature of µnit is that it supports automatically
+   * running multiple iterations of the tests.  This is usually only
+   * interesting if you make use of the PRNG to randomize your tests
+   * cases a bit, or if you are doing performance testing and want to
+   * average multiple runs.  0 is an alias for 1. */
+  1,
+  /* Just like MUNIT_TEST_OPTION_NONE, you can provide
+   * MUNIT_SUITE_OPTION_NONE or 0 to use the default settings. */
+  MUNIT_SUITE_OPTION_NONE
+};
+
+/* This is only necessary for EXIT_SUCCESS and EXIT_FAILURE, which you
+ * *should* be using but probably aren't (no, zero and non-zero don't
+ * always mean success and failure).  I guess my point is that nothing
+ * about µnit requires it. */
+#include <stdlib.h>
+#if 1
+int main(int argc, char* argv[]) {
+  /* Finally, we'll actually run our test suite!  That second argument
+   * is the user_data parameter which will be passed either to the
+   * test or (if provided) the fixture setup function. */
+  return munit_suite_main(&test_suite, NULL, argc, argv );
 }
+#endif
