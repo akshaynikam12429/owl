@@ -96,7 +96,7 @@ kodev run
 ```
 
 Open another shell window and run:
-`curl --insecure -F "bmd_file=@/some/file/path/dummy_data.txt" https://localhost:8888/bmd`
+`curl --insecure -F "bmd_file=@//home/root/work/nho2020/bmd_files/bmd.xml" https://localhost:8888/bmd`
 
 Check the logs in first shell; it should show that the file was successfully received.
 
