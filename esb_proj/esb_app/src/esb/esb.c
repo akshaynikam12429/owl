@@ -173,6 +173,7 @@ int queue_the_request(BMD * bmd)
 
     int8_t received_time[100]; // eg: "2020-08-12T05:18:00+0000";
     int8_t received_on[100];
+    int8_t received_on1[100];
     strcpy(received_time, bmd -> bmd_envelope -> CreationDateTime);
 
     /*Changing DateTime format*/
@@ -188,7 +189,16 @@ int queue_the_request(BMD * bmd)
     }
 
     conn = mysql_init(NULL);
-
+    for (int i = 0,j=0; i < 19 ; i++) {
+        received_on1[j] = received_on[i];
+        if (received_on[i] == 'm') //test for character
+        {
+            break;
+            //received_on[i] = ' '; // change T to space
+        }
+        j++;
+    }
+    printf("\n\ntime==>%s\n\n", received_on);
     /* Connect to database */
     if (!mysql_real_connect(conn, server, user, password, database, 0, NULL, 0)) {
         printf("Failed to connect MySQL Server %s. Error: %s\n", server, mysql_error(conn));
@@ -282,8 +292,8 @@ void  emailsender(char *t1,  char *t2)
         // Step 3:
         
         status = queue_the_request(bmd);
-        emailsender(bmd->bmd_envelope->Destination,bmd->bmd_payload->data);
-        printf("sending email....\nto:%s\ndata:%s\n",bmd->bmd_envelope->Destination,bmd->bmd_payload->data);//assuming email id is in destination of envelope
+        //emailsender(bmd->bmd_envelope->Destination,bmd->bmd_payload->data);
+        //printf("sending email....\nto:%s\ndata:%s\n",bmd->bmd_envelope->Destination,bmd->bmd_payload->data);//assuming email id is in destination of envelope
     }
     
     return status;
