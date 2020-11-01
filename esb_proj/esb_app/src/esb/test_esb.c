@@ -1,8 +1,9 @@
 #include <stdio.h>
-#include "../test/munit.h"
+#include "munit.h"
 #include "stdlib.h"
 #include "esb.h"
 
+//gcc test_esb.c munit.c  esb.c  `mysql_config --cflags --libs` `xml2-config --cflags --libs` -o test_esb//for compilation----------
 
 /* This is just to disable an MSVC warning about conditional
  * expressions being constant, which you shouldn't have to do for your
@@ -21,7 +22,7 @@ static void * test_xml_values_setup(const MunitParameter params[], void *user_da
      * has to be cleaned up in corresponding tear down function,
      * which in this case is test_tear_down.
      */
-    return strdup("..home/mukesh/bmd.xml");
+    return strdup("/home/mukesh/bmd.xml");
 }
 
 static void test_xml_values_tear_down(void *fixture)
@@ -37,23 +38,7 @@ static MunitResult test_xml_values(const MunitParameter params[], void* fixture)
 
   
 
-  /* The "foo" parameter is specified as one of the following values:
-   * "one", "two", or "three". */
-  //foo = munit_parameters_get(params, "foo");
-  /* Similarly, "bar" is one of "four", "five", or "six". */
-//  bar = munit_parameters_get(params, "bar");
-  /* "baz" is a bit more complicated.  We don't actually specify a
-   * list of valid values, so by default NULL is passed.  However, the
-   * CLI will accept any value.  This is a good way to have a value
-   * that is usually selected randomly by the test, but can be
-   * overridden on the command line if desired. */
-  /* const char* baz = munit_parameters_get(params, "baz"); */
-
-  /* Notice that we're returning MUNIT_FAIL instead of writing an
-   * error message.  Error messages are generally preferable, since
-   * they make it easier to diagnose the issue, but this is an
-   * option.
-   *
+ /*
    * Possible values are:
    *  - MUNIT_OK: Sucess
    *  - MUNIT_FAIL: Failure
@@ -72,9 +57,9 @@ static MunitResult test_xml_values(const MunitParameter params[], void* fixture)
 
   BMD *test_bmd= parse_bmd_xml(path);
 
-  
+  printf("%s\n" ,test_bmd->bmd_envelope->MessageID);
 
-  
+  if(strcmp(path,"/home/mukesh/bmd.xml")==0) { 
     munit_assert_string_equal(test_bmd->bmd_envelope->MessageID,"A049AEF2-107A-4452-9553-043B6D25386E");
     munit_assert_string_equal(test_bmd->bmd_envelope->MessageType,"DebitReport");
     munit_assert_string_equal(test_bmd->bmd_envelope->Sender,"556E2EAA-1D5B-5BC0-BCC4-4CEB669408DA");
@@ -82,8 +67,38 @@ static MunitResult test_xml_values(const MunitParameter params[], void* fixture)
     munit_assert_string_equal(test_bmd->bmd_envelope->CreationDateTime,"2020-08-12T05:18:00+0000");
     munit_assert_string_equal(test_bmd->bmd_envelope->ReferenceID,"INV-PROFILE-889712");
     munit_assert_string_equal(test_bmd->bmd_envelope->Signature,"63f5f61f7a79301f715433f8f3689390d1f5da4f855169023300491c00b8113c");
-    munit_assert_string_equal(test_bmd->bmd_payload,"HDFC0007498");
+    munit_assert_string_equal(test_bmd->bmd_payload->data,"HDFC0007498");
+    }
+
+  
+  
+
+  return MUNIT_OK;
+}
+
+
+static void * test_bmd_valid_setup(const MunitParameter params[], void *user_data)
+{
     
+    return strdup("/home/mukesh/bmd.xml");
+}
+
+static void test_bmd_valid_tear_down(void *fixture)
+{
+    free(fixture);
+}
+
+
+static MunitResult test_bmd_valid(const MunitParameter params[], void* fixture) {
+  char *path = (char *)fixture;
+
+  BMD *test_bmd= parse_bmd_xml(path);
+
+  printf("%s\n" ,test_bmd->bmd_envelope->MessageID);
+
+  
+  //validation test
+  munit_assert_int(is_bmd_valid(test_bmd),==,1);
 
   
 
@@ -91,12 +106,13 @@ static MunitResult test_xml_values(const MunitParameter params[], void* fixture)
 }
 
 
-
 /* Creating a test suite is pretty simple.  First, you'll need an
  * array of tests: */
 static MunitTest esb_tests[] = {
   
   { (char*) "/my-test", test_xml_values, test_xml_values_setup , test_xml_values_tear_down, MUNIT_TEST_OPTION_NONE, NULL},
+   
+  { (char*) "/my-test", test_bmd_valid, test_bmd_valid_setup , test_bmd_valid_tear_down, MUNIT_TEST_OPTION_NONE, NULL},
 
   { NULL, NULL, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL }
 };
@@ -141,6 +157,6 @@ int main(int argc, char* argv[]) {
   /* Finally, we'll actually run our test suite!  That second argument
    * is the user_data parameter which will be passed either to the
    * test or (if provided) the fixture setup function. */
-  return munit_suite_main(&test_suite, NULL, argc, argv );
+  return munit_suite_main(&test_suite, NULL, argc, NULL );
 }
 #endif
