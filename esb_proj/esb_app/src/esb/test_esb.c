@@ -4,6 +4,7 @@
 #include "esb.h"
 
 //gcc test_esb.c munit.c  esb.c  `mysql_config --cflags --libs` `xml2-config --cflags --libs` -o test_esb//for compilation----------
+
 /* This is just to disable an MSVC warning about conditional
  * expressions being constant, which you shouldn't have to do for your
  * code.  It's only here because we want to be able to do silly things
@@ -36,8 +37,8 @@ static MunitResult test_xml_values(const MunitParameter params[], void* fixture)
   char *path = (char *)fixture;
 
   
-/*
- 
+
+ /*
    * Possible values are:
    *  - MUNIT_OK: Sucess
    *  - MUNIT_FAIL: Failure
@@ -70,10 +71,39 @@ static MunitResult test_xml_values(const MunitParameter params[], void* fixture)
     }
 
   
+  
 
   return MUNIT_OK;
 }
 
+
+static void * test_bmd_valid_setup(const MunitParameter params[], void *user_data)
+{
+    
+    return strdup("/home/mukesh/bmd.xml");
+}
+
+static void test_bmd_valid_tear_down(void *fixture)
+{
+    free(fixture);
+}
+
+
+static MunitResult test_bmd_valid(const MunitParameter params[], void* fixture) {
+  char *path = (char *)fixture;
+
+  BMD *test_bmd= parse_bmd_xml(path);
+
+  printf("%s\n" ,test_bmd->bmd_envelope->MessageID);
+
+  
+  //validation test
+  munit_assert_int(is_bmd_valid(test_bmd),==,1);
+
+  
+
+  return MUNIT_OK;
+}
 
 
 /* Creating a test suite is pretty simple.  First, you'll need an
@@ -81,6 +111,8 @@ static MunitResult test_xml_values(const MunitParameter params[], void* fixture)
 static MunitTest esb_tests[] = {
   
   { (char*) "/my-test", test_xml_values, test_xml_values_setup , test_xml_values_tear_down, MUNIT_TEST_OPTION_NONE, NULL},
+   
+  { (char*) "/my-test", test_bmd_valid, test_bmd_valid_setup , test_bmd_valid_tear_down, MUNIT_TEST_OPTION_NONE, NULL},
 
   { NULL, NULL, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL }
 };
