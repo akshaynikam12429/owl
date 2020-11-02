@@ -1,3 +1,6 @@
+#ifndef ESB_H
+#define ESB_H
+
 int process_esb_request(char* bmd_file_path);
 
 /*typedef struct {
@@ -50,3 +53,5 @@ payload * extract_payload(char * bmd_xml);
 
 
 #define INSERT_IN_ESB_REQUEST "INSERT INTO esb_request(sender_id,dest_id,message_type,reference_id,message_id,received_on,status) VALUES ('%s','%s','%s','%s','%s','%s','%s');"
+
+#endif
