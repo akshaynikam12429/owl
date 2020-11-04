@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "munit.h"
+#include "../test/munit.h"
 #include "stdlib.h"
 #include "esb.h"
 
@@ -110,9 +110,9 @@ static MunitResult test_bmd_valid(const MunitParameter params[], void* fixture) 
  * array of tests: */
 static MunitTest esb_tests[] = {
   
-  { (char*) "/my-test", test_xml_values, test_xml_values_setup , test_xml_values_tear_down, MUNIT_TEST_OPTION_NONE, NULL},
+  { (char*) "/test_xml_values", test_xml_values, test_xml_values_setup , test_xml_values_tear_down, MUNIT_TEST_OPTION_NONE, NULL},
    
-  { (char*) "/my-test", test_bmd_valid, test_bmd_valid_setup , test_bmd_valid_tear_down, MUNIT_TEST_OPTION_NONE, NULL},
+  { (char*) "/test_bmd_valid", test_bmd_valid, test_bmd_valid_setup , test_bmd_valid_tear_down, MUNIT_TEST_OPTION_NONE, NULL},
 
   { NULL, NULL, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL }
 };
