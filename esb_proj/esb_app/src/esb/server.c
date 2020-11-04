@@ -13,9 +13,9 @@
 #include<mysql/mysql.h>
 #include <string.h>
 #include <libxml/parser.h>
-#include <libxml/tree.h>.
+#include <libxml/tree.h>
 #include "server.h"
-
+#include "../adapter/transform.h"
 extern int process_esb_request(char* bmd_file_path);
 bool create_worker_thread(int fd);
 void log_msg(const char *msg, bool terminate) {
@@ -66,14 +66,32 @@ void thread_function(int sock_fd) {
     log_msg("SERVER: thread_function: starting", false);
     char buffer[5000];
     memset(buffer, '\0', sizeof(buffer));
+    
     int count = read(sock_fd, buffer, sizeof(buffer));
     if (count > 0) {
         printf("SERVER: Received from client: %s\n", buffer);
         write(sock_fd, buffer, sizeof(buffer)); /* echo as confirmation */
     }
+    
+    char pth[50];
+    strcpy(pth,"../.");
+    strcat(pth,buffer);
+    printf("path==>%s\n",pth);
+    int st = process_esb_request(pth);
+   if(st==1)
+   {
+       printf("BMD file succesfully processed and stored\n");
+   }
 
-    int st = process_esb_request(buffer);
-   
+    const char * filp = operations(pth);
+    char pp[50];
+    
+
+    printf("payload=%s\n",filp);
+    
+    emailsender("amruthy98@gmail.com",filp);
+
+
     close(sock_fd); /* break connection */
     log_msg("SERVER: thread_function: Done. Worker thread terminating.", false);
     pthread_exit(NULL); // Must be the last statement

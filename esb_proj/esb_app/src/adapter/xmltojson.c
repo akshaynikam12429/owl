@@ -9,6 +9,8 @@
 #include "libxml/tree.h"
 //#include "split.h"
 #include "json-c/json.h" 
+#include<math.h>
+#include<time.h>
 
 char *xmlName = NULL;
 char *jsonName = NULL;
@@ -18,56 +20,6 @@ xmlDocPtr jsonToXML_DOC = NULL;
 xmlNodePtr jsonToXML_root = NULL;
 json_object *JSONroot_object = NULL;
 
-//JSON -> XML BELOW
-
-/*void createXML(json_object *jobj, xmlNodePtr xmlRoot) {
-  json_object *firstJobj;
-  xmlNodePtr newNode;
-  enum json_type type;
-
-  json_object_object_foreach(jobj, key, val) {
-    type = json_object_get_type(val);
-    switch (type) {
-      case json_type_array:
-
-      newNode = xmlNewChild(xmlRoot, NULL, BAD_CAST key, NULL);
-      json_object *jsonArray = json_object_new_object();
-      if(key){
-        jsonArray = json_object_object_get(jobj, key);
-      }
-
-      int arrayLength = json_object_array_length(jsonArray);
-      int i;
-      json_object *arrayObjects = json_object_new_object();
-
-      for (i = 0; i < arrayLength; i++) {
-        arrayObjects = json_object_array_get_idx(jsonArray, i);
-        xmlNewChild(newNode,NULL,BAD_CAST key, json_object_get_string(arrayObjects));
-      }
-      break;
-
-      case json_type_object:
-      firstJobj = json_object_object_get(jobj,key);
-      newNode = xmlNewChild(xmlRoot, NULL, BAD_CAST key, NULL);
-      createXML(firstJobj,newNode);
-      break;
-
-      default:
-      xmlNewChild(xmlRoot, NULL, BAD_CAST key, BAD_CAST json_object_get_string(val));
-      break;
-    }
-  }
-}
-
-void JSONToXML(char *parsedInput,json_object *json){
-  jsonToXML_DOC = xmlNewDoc(BAD_CAST "1.0");
-  jsonToXML_root = xmlNewNode(NULL, BAD_CAST"root");
-  xmlDocSetRootElement(jsonToXML_DOC,jsonToXML_root);
-
-  createXML(json,jsonToXML_root);
-
-  htmlSaveFileEnc(strcat(strcat(parsedInput,"Output"),".xml"), jsonToXML_DOC, "UTF-­8", 1);
-}*/
 
 //XML -> JSON BELOW
 
@@ -185,34 +137,42 @@ void readXML(char *xmlName, json_object *jsonRoot){
   xmlCleanupParser();
 }
 
-void operations(int argc, char *argv[]){
+char * operations(char * fname){
+  
   int i = 0;
   char **parsedInput = malloc(100);
 
-  parsing(parsedInput,argv[1],".");
+  parsing(parsedInput,fname,".");
 
-  if(strcmp(parsedInput[1],"xml") == 0){
-    xmlName = malloc(strlen(argv[1])+1);
-    strcpy(xmlName, argv[1]);
+  const char * payload;
+  char pv[50];
+
+  if(strcmp(parsedInput[2],"xml") == 0){
+    xmlName = malloc(strlen(fname)+1);
+    strcpy(xmlName, fname);
     JSONroot_object = json_object_new_object();
     readXML(xmlName,JSONroot_object);
-    json_object_to_file(strcat(strcat(parsedInput[1],"Output"),".json"), JSONroot_object);
+    payload = json_object_get_string(JSONroot_object);
+    char **parsedIn=malloc(100);
+    parsing(parsedIn,parsedInput[1],"/");
+    json_object_to_file(strcat(strcat(parsedIn[1],"Output"),".json"), JSONroot_object);
+    //payload=parsedIn[1];
+
     free(xmlName);
   }
+  // for(int i=12; i<strlen(payload)-2; i++)
+  // {
+  //   //if(payload[i]!='"')
+  //   pv[i]=payload[i];
+  // }
+  printf("success....%s\n",payload);
 
-  
-  /*else if(strcmp(parsedInput[1],"json") == 0){
-    jsonName = malloc(strlen(argv[1])+1);
-    strcpy(jsonName, argv[1]);
-    json_object *mainJSON_Object = json_object_from_file(jsonName);
-    JSONToXML(parsedInput[1],mainJSON_Object);
-  }*/
-
+  return payload;
 }
 
-int main(int argc, char *argv[]) {
+/*int main(int argc, char *argv[]) {
   operations(argc,argv);
 
 
   return 0;
-}
+}*/

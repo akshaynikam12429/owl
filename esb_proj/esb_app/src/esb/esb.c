@@ -6,7 +6,12 @@
 #include <string.h>
 #include <libxml/parser.h>
 #include <libxml/tree.h>
+#include "server.h"
 
+
+//extern void emailsender(char *to, char *text);
+
+const char * mailid = "amruthy98@gmail.com";
 static char *server = "localhost";
 static char *user = "root";
 static char *password = "my sql";
@@ -35,6 +40,7 @@ static payload *get_payload_struct()
  * TODO: This is to be implemented separately.
  */
 BMD * parse_bmd_xml(char* bmd_file_path) {
+    printf("file is entering parse func\n");
     xmlDoc         *document;
     xmlNode        *root, *first_child, *node,*temp;
     char           *filename;
@@ -185,6 +191,10 @@ int queue_the_request(BMD * bmd)
         {
             received_on[i] = ' '; // change T to space
         }
+        if (received_on[i] == '+') //test for character
+        {
+            break;
+        }
         j++;
     }
 
@@ -209,6 +219,7 @@ int queue_the_request(BMD * bmd)
     /*sql query to insert in table*/
     char * status = "available";
     char query1[5000];
+    //char query2[5000];
 
     sprintf(query1, INSERT_IN_ESB_REQUEST,
         bmd -> bmd_envelope -> Sender,
@@ -225,7 +236,9 @@ int queue_the_request(BMD * bmd)
         success = -1;
         return success;
     }
-    mysql_query(conn, "SELECT * FROM esb_request");
+    // sprintf(query2, "SELECT * FROM `esb`.`esb_request`;");
+    // mysql_query(conn,query2);
+    // printf("\n\n%s\n\n",query2);
 
     res = mysql_use_result(conn);
 
@@ -240,7 +253,7 @@ int queue_the_request(BMD * bmd)
 }
 
 
-void  emailsender(char *t1,  char *t2)
+/*void  emailsender(char *t1,  char *t2)
 {
      char cmd[100];  // to hold the command.
         char tempFile[100];     // name of tempfile.
@@ -260,7 +273,7 @@ void  emailsender(char *t1,  char *t2)
          system(cmd);     // execute it.
         
 
-}
+}*/
 
 
 /**
@@ -269,7 +282,8 @@ void  emailsender(char *t1,  char *t2)
  */
  int process_esb_request(char* bmd_file_path) {
     int status = 1; // 1 => OK, -ve => Errors
-    printf("Handling the BMD %s\n", bmd_file_path);
+   
+    printf("Handling the BMD file %s\n", bmd_file_path);
     /** TODO: 
      * Perform the steps outlined in the Theory of Operation section of
      * the ESB specs document. Each major step should be implemented in
@@ -277,7 +291,7 @@ void  emailsender(char *t1,  char *t2)
      * the modules, including this one.
      */
     // Step 1:
-   BMD * bmd;
+    BMD * bmd;
    bmd = parse_bmd_xml(bmd_file_path);
 
    // Step 2:
@@ -292,7 +306,7 @@ void  emailsender(char *t1,  char *t2)
         // Step 3:
         
         status = queue_the_request(bmd);
-        //emailsender(bmd->bmd_envelope->Destination,bmd->bmd_payload->data);
+        //emailsender(bmd -> bmd_envelope -> Destination, bmd->bmd_payload->data);
         //printf("sending email....\nto:%s\ndata:%s\n",bmd->bmd_envelope->Destination,bmd->bmd_payload->data);//assuming email id is in destination of envelope
     }
     

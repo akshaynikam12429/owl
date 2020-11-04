@@ -1,7 +1,7 @@
 #ifndef ESB_H
 #define ESB_H
 
-int process_esb_request(char* bmd_file_path);
+
 
 /*typedef struct {
     char* sender_id;
@@ -45,6 +45,7 @@ typedef struct {
 }
 BMD;
 
+int process_esb_request(char* bmd_file_path);
 BMD * parse_bmd_xml(char * );
 BMD * process_xml(char * );
 int check_if_string_is_guid(const unsigned char * value);
