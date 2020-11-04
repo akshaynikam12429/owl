@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "munit.h"
+#include "../test/munit.h"
 #include "stdlib.h"
 #include "esb.h"
 
@@ -105,14 +105,32 @@ static MunitResult test_bmd_valid(const MunitParameter params[], void* fixture) 
   return MUNIT_OK;
 }
 
+static MunitResult test_queue_request(const MunitParameter params[], void* fixture) {
+  
+
+  BMD *test_bmd= parse_bmd_xml("/home/mukesh/bmd.xml");
+
+  printf("%s\n" ,test_bmd->bmd_envelope->MessageID);
+
+  
+  //validation test
+  munit_assert_int(queue_the_request(test_bmd),==,1);
+
+  
+
+  return MUNIT_OK;
+}
+
 
 /* Creating a test suite is pretty simple.  First, you'll need an
  * array of tests: */
 static MunitTest esb_tests[] = {
   
-  { (char*) "/my-test", test_xml_values, test_xml_values_setup , test_xml_values_tear_down, MUNIT_TEST_OPTION_NONE, NULL},
+  { (char*) "/test_xml_values", test_xml_values, test_xml_values_setup , test_xml_values_tear_down, MUNIT_TEST_OPTION_NONE, NULL},
    
-  { (char*) "/my-test", test_bmd_valid, test_bmd_valid_setup , test_bmd_valid_tear_down, MUNIT_TEST_OPTION_NONE, NULL},
+  { (char*) "/test_bmd_valid", test_bmd_valid, test_bmd_valid_setup , test_bmd_valid_tear_down, MUNIT_TEST_OPTION_NONE, NULL},
+
+  { (char*) "/test_queue_request",test_queue_request, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL },
 
   { NULL, NULL, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL }
 };

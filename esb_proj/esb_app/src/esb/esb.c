@@ -104,19 +104,19 @@ BMD * parse_bmd_xml(char* bmd_file_path) {
             bmd->bmd_payload->data=(unsigned char*)arrayValue[x];
     }
 
-    printf("%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n",
+    // printf("%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n",
      
-    bmd->bmd_envelope->MessageID,
-    bmd->bmd_envelope->MessageType,
-    bmd->bmd_envelope->Sender,
-    bmd->bmd_envelope->Destination,
-    bmd->bmd_envelope->CreationDateTime,
-    bmd->bmd_envelope->Signature,
-    bmd->bmd_envelope->ReferenceID,
-    //bmd->bmd_envelope->UserProperties,
-    bmd->bmd_payload->data
+    // bmd->bmd_envelope->MessageID,
+    // bmd->bmd_envelope->MessageType,
+    // bmd->bmd_envelope->Sender,
+    // bmd->bmd_envelope->Destination,
+    // bmd->bmd_envelope->CreationDateTime,
+    // bmd->bmd_envelope->Signature,
+    // bmd->bmd_envelope->ReferenceID,
+    // //bmd->bmd_envelope->UserProperties,
+    // bmd->bmd_payload->data
      
-     );
+    //  );
     return bmd;
 }
 
