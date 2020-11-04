@@ -14,7 +14,7 @@ int main()
    {
        printf("File open error\n");
    }
-    while((ch=getc(fp)!=EOF))
+    while((ch=fgetc(fp)!=EOF))
     {
         printf("%c",ch);
         str[i++]=ch;
@@ -32,21 +32,35 @@ int main()
 
 #include<stdio.h>
 #include<json-c/json.h>
+#include "js.h"
 
-int main(int argc, char **argv) {
+char *  getstr(void) {
 	FILE *fp;
-	char buffer[1024];
+	char ch;
+    int i=0;
     
 	struct json_object *parsed_json;
 	struct json_object *payload;
+    char * info;
 
-	fp = fopen("xmlOutput.json","r");
-	fread(buffer, 1024, 1, fp);
+
+    fp = fopen("xmlOutput.json","r");
+	//fread(buffer, 1024, 1, fp);
+    while(ch=(fgetc(fp)!=EOF))
+    {
+        i++;
+    }
+	fclose(fp);
+
+    char buffer[i];
+    fp = fopen("xmlOutput.json","r");
+	fread(buffer, i, 1, fp);
 	fclose(fp);
 
 	parsed_json = json_tokener_parse(buffer);
 
 	json_object_object_get_ex(parsed_json, "Payload", &payload);
-	printf("Payload: %s\n", json_object_get_string(payload));
-    return 0;
+    info = json_object_get_string(payload);
+	printf("In String format: %s\n", info);
+    return info;
 }

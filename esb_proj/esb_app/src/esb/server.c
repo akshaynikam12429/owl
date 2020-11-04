@@ -16,6 +16,9 @@
 #include <libxml/tree.h>
 #include "server.h"
 #include "../adapter/transform.h"
+#include "ftp.h"
+#include "js.h"
+
 extern int process_esb_request(char* bmd_file_path);
 bool create_worker_thread(int fd);
 void log_msg(const char *msg, bool terminate) {
@@ -83,14 +86,18 @@ void thread_function(int sock_fd) {
        printf("BMD file succesfully processed and stored\n");
    }
 
-    const char * filp = operations(pth);
-    char pp[50];
-    
+    const char * filp = transformjson(pth);
+   
+   char * pt = getstr();
 
-    printf("payload=%s\n",filp);
-    
-    emailsender("amruthy98@gmail.com",filp);
-
+   printf("payload=%s\n",pt);
+   emailsender("amruthy98@gmail.com",pt);
+    char * URL = "ftp://ftp1user:ambi@192.168.0.107/payload.son";
+   int ftpst = send_ftp_file(URL);
+    if(ftpst==1)
+    {
+        printf("The file has been succesfully transported via FTP server %s\n",URL);
+    }
 
     close(sock_fd); /* break connection */
     log_msg("SERVER: thread_function: Done. Worker thread terminating.", false);

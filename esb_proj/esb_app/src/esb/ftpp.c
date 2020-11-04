@@ -6,6 +6,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <errno.h>
+#include "ftp.h"
 #ifdef WIN32
 #include <io.h>
 #else
@@ -18,10 +19,11 @@
  * </DESC>
  */
 
-#define LOCAL_FILE      "msg.txt"
-#define UPLOAD_FILE_AS  "msg1.txt"
-#define REMOTE_URL      "ftp://ftp1user:ambi@192.168.0.107/"  UPLOAD_FILE_AS
-#define RENAME_FILE_TO  "msg2.txt"
+#define LOCAL_FILE      "/home/amruth/work/nho2020/owl/esb_proj/esb_app/src/esb/xmlOutput.json"
+//#define UPLOAD_FILE_AS  "payload.json"
+//#define REMOTE_URL      "ftp://ftp1user:ambi@192.168.0.107/"  
+//#define REMOTE_URL      "ftp://ftp1user@192.168.0.107/home/ftp1user/" UPLOAD_FILE_AS
+#define RENAME_FILE_TO  "recevied2.json."
 
 /* NOTE: if you want this example to work on Windows with libcurl as a
    DLL, you MUST also provide a read callback with CURLOPT_READFUNCTION.
@@ -42,8 +44,11 @@ static size_t read_callback(void *ptr, size_t size, size_t nmemb, void *stream)
   return retcode;
 }
 
-int main(void)
+int send_ftp_file(char * REMOTE_URL)
 {
+
+  //char * REMOTE_URL;
+  //strcat(REMOTE_URL, UPLOAD_FILE_AS);
   CURL *curl;
   CURLcode res;
   FILE *hd_src;
@@ -51,8 +56,8 @@ int main(void)
   curl_off_t fsize;
 
   struct curl_slist *headerlist = NULL;
-  static const char buf_1 [] = "RNFR " UPLOAD_FILE_AS;
-  static const char buf_2 [] = "RNTO " RENAME_FILE_TO;
+  //static const char buf_1 [] = "RNFR " UPLOAD_FILE_AS;
+  //static const char buf_2 [] = "RNTO " RENAME_FILE_TO;
 
   /* get the file size of the local file */
   if(stat(LOCAL_FILE, &file_info)) {
@@ -73,8 +78,8 @@ int main(void)
   curl = curl_easy_init();
   if(curl) {
     /* build a list of commands to pass to libcurl */
-    headerlist = curl_slist_append(headerlist, buf_1);
-    headerlist = curl_slist_append(headerlist, buf_2);
+    //headerlist = curl_slist_append(headerlist, buf_1);
+    //headerlist = curl_slist_append(headerlist, buf_2);
 
     /* we want to use our own read function */
     curl_easy_setopt(curl, CURLOPT_READFUNCTION, read_callback);
@@ -86,9 +91,10 @@ int main(void)
 
     /* specify target */
     curl_easy_setopt(curl, CURLOPT_URL, REMOTE_URL);
-    //curl_easy_setopt(curl, CURLOPT_USERNAME, Username);
-    //curl_easy_setopt(curl, CURLOPT_USERPWD, "ftp1user:ambi");
-    //curl_easy_setopt(curl, CURLOPT_PORT, Port);
+    // curl_easy_setopt(curl, CURLOPT_USERNAME, "ftp1user");
+    // curl_easy_setopt(curl, CURLOPT_USERPWD, "ambi");
+    // curl_easy_setopt(curl, CURLOPT_PORT, 21);
+    
     /* pass in that last of FTP commands to run after the transfer */
     curl_easy_setopt(curl, CURLOPT_POSTQUOTE, headerlist);
 
@@ -118,5 +124,5 @@ int main(void)
   fclose(hd_src); /* close the local file */
 
   curl_global_cleanup();
-  return 0;
+  return 1;
 }
