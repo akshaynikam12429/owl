@@ -18,8 +18,9 @@
 #include "../adapter/transform.h"
 #include "ftp.h"
 #include "js.h"
+#include "server.h"
 
-extern int process_esb_request(char* bmd_file_path);
+extern TD * process_esb_request(char* bmd_file_path);
 bool create_worker_thread(int fd);
 void log_msg(const char *msg, bool terminate) {
     printf("%s\n", msg);
@@ -80,24 +81,39 @@ void thread_function(int sock_fd) {
     strcpy(pth,"../.");
     strcat(pth,buffer);
     printf("path==>%s\n",pth);
-    int st = process_esb_request(pth);
-   if(st==1)
+    TD * st = process_esb_request(pth);
+
+   if(st->val==1)
    {
        printf("BMD file succesfully processed and stored\n");
    }
 
-    const char * filp = transformjson(pth);
+    if(!(strcmp(st->Transform_key,"Json_file")&&!(strcmp(st->Transform_value,"json"))))
+    {
+        const char * filp = transformjson(pth);
+
+    }
    
    char * pt = getstr();
 
-   printf("payload=%s\n",pt);
-   emailsender("amruthy98@gmail.com",pt);
-    char * URL = "ftp://ftp1user:ambi@192.168.0.107/payload.son";
-   int ftpst = send_ftp_file(URL);
-    if(ftpst==1)
+
+    if(!(strcmp(st->Transport_value,"EMAIL")))
     {
-        printf("The file has been succesfully transported via FTP server %s\n",URL);
+        printf("payload=%s\n",pt);
+        emailsender(st->Transport_key,pt);
+
     }
+
+
+   if(!(strcmp(st->Transport_value,"FTP")))
+   {
+        char * URL =st->Transport_key;
+        int ftpst = send_ftp_file(URL);
+        if(ftpst==1)
+        {
+            printf("The file has been succesfully transported via FTP server %s\n",URL);
+        }
+   }
 
     close(sock_fd); /* break connection */
     log_msg("SERVER: thread_function: Done. Worker thread terminating.", false);
@@ -167,6 +183,7 @@ _Noreturn void start_server_socket(char *socket_file, int max_connects) {
 int main() {
   
         start_server_socket("./my_sock", 10);
+        return 0;
     
 }
 
