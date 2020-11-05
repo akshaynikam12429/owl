@@ -9,9 +9,7 @@
 #include "server.h"
 
 
-//extern void emailsender(char *to, char *text);
 
-const char * mailid = "amruthy98@gmail.com";
 static char *server = "localhost";
 static char *user = "root";
 static char *password = "my sql";
@@ -21,6 +19,8 @@ unsigned int port = 3306;
 static char *unix_socket = NULL;
 
 unsigned int flag = 0;
+
+TD * t1;
 
 
 static envelope *get_envelope_struct()
@@ -104,26 +104,19 @@ BMD * parse_bmd_xml(char* bmd_file_path) {
             bmd->bmd_payload->data=(unsigned char*)arrayValue[x];
     }
 
-    // printf("%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n",
-     
-    // bmd->bmd_envelope->MessageID,
-    // bmd->bmd_envelope->MessageType,
-    // bmd->bmd_envelope->Sender,
-    // bmd->bmd_envelope->Destination,
-    // bmd->bmd_envelope->CreationDateTime,
-    // bmd->bmd_envelope->Signature,
-    // bmd->bmd_envelope->ReferenceID,
-    // //bmd->bmd_envelope->UserProperties,
-    // bmd->bmd_payload->data
-     
-    //  );
+ 
     return bmd;
 }
 
- int is_bmd_valid(BMD * bmd)
+ TD * is_bmd_valid(BMD * bmd)
 {
-    int valid = 1; // 1 => vaild, -1 => invalid
+    TD *t1 = (TD *)(malloc(sizeof(TD *)));
+    int valid = 0; // 1 => vaild, -1 => invalid
     // TODO: Implement the validation logic here
+
+     MYSQL * conn;
+    MYSQL_RES * res, * resTf, * resTr;
+    MYSQL_ROW row, rowTf, rowTr;
      
       if(*(bmd->bmd_envelope->MessageID)==0)
     {
@@ -160,8 +153,110 @@ BMD * parse_bmd_xml(char* bmd_file_path) {
         printf("ReferenceID is mandatory (missing in BMD file)\n");
         valid = 0;
     }
+    
+    conn = mysql_init(NULL);
+    if (!mysql_real_connect(conn, server, user, password, database, 0, NULL, 0)) {
+        printf("Failed to connect MySQL Server %s. Error: %s\n", server, mysql_error(conn));
+        exit(1);
+       
+    }
+    printf("Connection success\n");
 
-    return valid;
+    mysql_query(conn,"SELECT sender, destination, message_type, route_id FROM routes;");
+    res = mysql_store_result(conn);
+    int num_fields = mysql_num_fields(res);
+    //printf("num=%d\n",num_fields);
+    //char st[num_fields];
+    char query2[5000], query3[5000];
+    char * st;
+    //row = mysql_fetch_row(res);
+    while ((row = mysql_fetch_row(res)))
+    {
+        for(int i = 0; i < num_fields; i++)
+        {
+        
+        if(!(strcmp(bmd->bmd_envelope->Sender,row[i])) && !(strcmp(bmd->bmd_envelope->Destination,row[i+1])) && !(strcmp(bmd->bmd_envelope->MessageType,row[i+2])))
+        {
+            printf("ID matched...\n");
+            st = row[i+3];
+            printf("route_id=>%s\n",st);
+            //st++;
+           valid =1;
+           break;
+           
+        }
+       // printf("%s  ", row[i] ? row[i] : "NULL");
+        
+        }
+    }
+    if(valid==1)
+    {
+     sprintf(query2,CHECK_TRANSFORM, st);
+            printf("\n\n%s\n\n", query2);
+            if (mysql_query(conn, query2)) {
+                printf("Failed to execute query.Error: %s\n", mysql_error(conn));
+            }
+            resTf =  mysql_store_result(conn);
+            rowTf = mysql_fetch_row(resTf);
+                
+                if(((rowTf[0]!=NULL)) && ((rowTf[0]!=NULL) ))
+                {
+                    printf("%s\t%s\n",rowTf[0],rowTf[1]);
+                    t1->Transform_key = rowTf[0];
+                    t1->Transform_value = rowTf[1];
+                        valid = 1;
+                       
+                }
+
+                else
+                {
+                    valid=0;
+                }
+                
+    }
+    else
+    {
+        valid=0;
+    }
+    
+    if(valid==1)
+    {
+     sprintf(query3,CHECK_TRANSPORT, st);
+            printf("\n\n%s\n\n", query3);
+            if (mysql_query(conn, query3)) {
+                printf("Failed to execute query.Error: %s\n", mysql_error(conn));
+            }
+            resTr =  mysql_store_result(conn);
+            rowTr = mysql_fetch_row(resTr);
+                
+                if(((rowTr[0]!=NULL)) && ((rowTr[0]!=NULL) ))
+                {
+                    printf("%s\t%s\n",rowTr[0],rowTr[1]);
+                    t1->Transport_key = rowTr[0];
+                    t1->Transport_value = rowTr[1];
+                        valid = 1;
+                       
+                }
+
+                else
+                {
+                    valid=0;
+                }
+    }   
+
+    else
+    {
+        valid=0;
+    }
+    
+
+         t1->val=valid;        
+    printf("valid=%d\n\n",valid);
+
+    mysql_free_result(res);
+    mysql_close(conn);
+    
+    return t1;
 }
 
 int queue_the_request(BMD * bmd)
@@ -253,34 +348,13 @@ int queue_the_request(BMD * bmd)
 }
 
 
-/*void  emailsender(char *t1,  char *t2)
-{
-     char cmd[100];  // to hold the command.
-        char tempFile[100];     // name of tempfile.
-
-        strcpy(tempFile,tempnam("/tmp","sendmail")); // generate temp file name.
-
-        FILE *fp = fopen(tempFile,"w"); // open it for writing.
-        fprintf(fp,"From: Team Owl\r\n");
-        fprintf(fp,"Subject:payload\n");        // write body to it.
-        //fclose(fp);
-
-        //FILE *fp = fopen(tempFile,"w"); // open it for writing.
-        fprintf(fp,"%s\n",t2);        // write body to it.
-        fclose(fp);             // close it.
-
-        sprintf(cmd,"ssmtp %s < %s",t1,tempFile); // prepare command.
-         system(cmd);     // execute it.
-        
-
-}*/
-
 
 /**
  * This is the main entry point into the ESB. 
  * It will start processing of a BMD received at the HTTP endpoint.
  */
- int process_esb_request(char* bmd_file_path) {
+ TD * process_esb_request(char* bmd_file_path) {
+    TD *td = (TD *)(malloc(sizeof(TD *)));
     int status = 1; // 1 => OK, -ve => Errors
    
     printf("Handling the BMD file %s\n", bmd_file_path);
@@ -295,7 +369,8 @@ int queue_the_request(BMD * bmd)
    bmd = parse_bmd_xml(bmd_file_path);
 
    // Step 2:
-   if (!is_bmd_valid(bmd))
+    td = (is_bmd_valid(bmd));
+    if(td->val==0)
     {
         //TODO: Process the error case
         printf("BMD is invalid!\n");
@@ -309,6 +384,11 @@ int queue_the_request(BMD * bmd)
         //emailsender(bmd -> bmd_envelope -> Destination, bmd->bmd_payload->data);
         //printf("sending email....\nto:%s\ndata:%s\n",bmd->bmd_envelope->Destination,bmd->bmd_payload->data);//assuming email id is in destination of envelope
     }
-    
-    return status;
+    // td->Transform_key = t1->Transform_key;
+    // td->Transform_value = t1->Transform_value;
+    // td->Transport_key = t1->Transport_key;
+    // td->Transport_value = t1->Transport_value;
+    td->val=status;
+
+    return td;
 }

@@ -1,20 +1,6 @@
 #ifndef ESB_H
 #define ESB_H
 
-
-
-/*typedef struct {
-    char* sender_id;
-    char* destination_id;
-    char* message_type;
-    // TODO: Other fields
-} bmd_envelop;
-
-typedef struct {
-    bmd_envelop envelop;
-    char* payload;
-} bmd;
-*/
 typedef struct {
     const unsigned char * key;
     void * value;
@@ -45,7 +31,16 @@ typedef struct {
 }
 BMD;
 
-int process_esb_request(char* bmd_file_path);
+typedef struct {
+    int val;
+    const char * Transform_key;
+    const char * Transform_value;
+    const char * Transport_key;
+    const char * Transport_value;
+}
+TD; 
+
+TD * process_esb_request(char * bmd_file_path);
 BMD * parse_bmd_xml(char * );
 BMD * process_xml(char * );
 int check_if_string_is_guid(const unsigned char * value);
@@ -54,5 +49,7 @@ payload * extract_payload(char * bmd_xml);
 
 
 #define INSERT_IN_ESB_REQUEST "INSERT INTO esb_request(sender_id,dest_id,message_type,reference_id,message_id,received_on,status) VALUES ('%s','%s','%s','%s','%s','%s','%s');"
+#define CHECK_TRANSFORM "SELECT config_key, config_value FROM transform_config WHERE route_id = '%s';"
+#define CHECK_TRANSPORT "SELECT config_key, config_value FROM transport_config WHERE route_id = '%s';"
 
 #endif
