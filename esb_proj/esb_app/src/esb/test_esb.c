@@ -122,6 +122,22 @@ static MunitResult test_queue_request(const MunitParameter params[], void* fixtu
 }
 
 
+static MunitResult test_process_esb_request(const MunitParameter params[], void* fixture) {
+  
+
+ 
+
+  
+  
+  int status = process_esb_request("/home/mukesh/bmd.xml");
+  munit_assert_int(status,==,1);
+
+  
+
+  return MUNIT_OK;
+}
+
+
 /* Creating a test suite is pretty simple.  First, you'll need an
  * array of tests: */
 static MunitTest esb_tests[] = {
@@ -131,6 +147,8 @@ static MunitTest esb_tests[] = {
   { (char*) "/test_bmd_valid", test_bmd_valid, test_bmd_valid_setup , test_bmd_valid_tear_down, MUNIT_TEST_OPTION_NONE, NULL},
 
   { (char*) "/test_queue_request",test_queue_request, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL },
+
+  { (char*) "/process_esb_request",test_process_esb_request, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL },
 
   { NULL, NULL, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL }
 };
