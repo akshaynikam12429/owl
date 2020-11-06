@@ -33,10 +33,10 @@ BMD;
 
 typedef struct {
     int val;
-    const char * Transform_key;
-    const char * Transform_value;
-    const char * Transport_key;
-    const char * Transport_value;
+     char * Transform_key;
+     char * Transform_value;
+     char * Transport_key;
+     char * Transport_value;
 }
 TD; 
 

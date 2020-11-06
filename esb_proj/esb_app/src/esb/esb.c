@@ -20,7 +20,7 @@ static char *unix_socket = NULL;
 
 unsigned int flag = 0;
 
-TD * t1;
+
 
 
 static envelope *get_envelope_struct()
@@ -178,7 +178,7 @@ BMD * parse_bmd_xml(char* bmd_file_path) {
         if(!(strcmp(bmd->bmd_envelope->Sender,row[i])) && !(strcmp(bmd->bmd_envelope->Destination,row[i+1])) && !(strcmp(bmd->bmd_envelope->MessageType,row[i+2])))
         {
             printf("ID matched...\n");
-            st = row[i+3];
+            st = row[i+3];  //route id is stored 
             printf("route_id=>%s\n",st);
             //st++;
            valid =1;
@@ -199,7 +199,7 @@ BMD * parse_bmd_xml(char* bmd_file_path) {
             resTf =  mysql_store_result(conn);
             rowTf = mysql_fetch_row(resTf);
                 
-                if(((rowTf[0]!=NULL)) && ((rowTf[0]!=NULL) ))
+                if(((rowTf[0]!=NULL)) && ((rowTf[1]!=NULL) ))
                 {
                     printf("%s\t%s\n",rowTf[0],rowTf[1]);
                     t1->Transform_key = rowTf[0];
@@ -229,7 +229,7 @@ BMD * parse_bmd_xml(char* bmd_file_path) {
             resTr =  mysql_store_result(conn);
             rowTr = mysql_fetch_row(resTr);
                 
-                if(((rowTr[0]!=NULL)) && ((rowTr[0]!=NULL) ))
+                if(((rowTr[0]!=NULL)) && ((rowTr[1]!=NULL) ))
                 {
                     printf("%s\t%s\n",rowTr[0],rowTr[1]);
                     t1->Transport_key = rowTr[0];
@@ -369,7 +369,7 @@ int queue_the_request(BMD * bmd, char * bmd_file_path)
    bmd = parse_bmd_xml(bmd_file_path);
 
    // Step 2:
-    td = (is_bmd_valid(bmd));
+    td = (is_bmd_valid(bmd)); 
     if(td->val==0)
     {
         //TODO: Process the error case
