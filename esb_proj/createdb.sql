@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS `esb`.`esb_request` (
   `data_location` TEXT NULL,
   `status` VARCHAR(20) NOT NULL,
   `status_details` TEXT NULL,
-  PRIMARY KEY (`id`),
+  PRIMARY KEY (`id`)
   )
 ENGINE = InnoDB;
 
@@ -68,7 +68,7 @@ CREATE TABLE IF NOT EXISTS `esb`.`transform_config` (
   UNIQUE INDEX `UK_route_config` (`route_id` ASC, `config_key` ASC),
   CONSTRAINT `route`
     FOREIGN KEY (`route_id`)
-    REFERENCES `esb`.`routes` (`route_id`)
+    REFERENCES `esb`.`routes` (`route_id`))
    
 ENGINE = InnoDB;
 
@@ -88,7 +88,7 @@ CREATE TABLE IF NOT EXISTS `esb`.`transport_config` (
   UNIQUE INDEX `UK_route_config` (`config_key` ASC, `route_id` ASC),
  
     FOREIGN KEY (`route_id`)
-    REFERENCES `esb`.`routes` (`route_id`)
+    REFERENCES `esb`.`routes` (`route_id`))
    
 ENGINE = InnoDB;
 
