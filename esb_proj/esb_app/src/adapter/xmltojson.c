@@ -137,7 +137,7 @@ void readXML(char *xmlName, json_object *jsonRoot){
   xmlCleanupParser();
 }
 
-char * operations(char * fname){
+char * transformjson(char * fname){
   
   int i = 0;
   char **parsedInput = malloc(100);
@@ -145,7 +145,22 @@ char * operations(char * fname){
   parsing(parsedInput,fname,".");
 
   const char * payload;
-  char pv[50];
+  //char pv[50];
+  
+
+  /*if(strcmp(parsedInput[2],"xml") == 0){
+    xmlName = malloc(strlen(fname)+1);
+    strcpy(xmlName, fname);
+    JSONroot_object = json_object_new_object();
+    readXML(xmlName,JSONroot_object);
+    payload = json_object_get_string(JSONroot_object);
+    //char **parsedIn=malloc(100);
+    //parsing(parsedIn,parsedInput[1],"/");
+    json_object_to_file(strcat(strcat(parsedInput[1],"Output"),".json"), JSONroot_object);
+    //payload=parsedIn[1];
+
+    free(xmlName);
+  }*/
 
   if(strcmp(parsedInput[2],"xml") == 0){
     xmlName = malloc(strlen(fname)+1);
@@ -153,11 +168,7 @@ char * operations(char * fname){
     JSONroot_object = json_object_new_object();
     readXML(xmlName,JSONroot_object);
     payload = json_object_get_string(JSONroot_object);
-    char **parsedIn=malloc(100);
-    parsing(parsedIn,parsedInput[1],"/");
-    json_object_to_file(strcat(strcat(parsedIn[1],"Output"),".json"), JSONroot_object);
-    //payload=parsedIn[1];
-
+    json_object_to_file(strcat(strcat(parsedInput[2],"Output"),".json"), JSONroot_object);
     free(xmlName);
   }
   // for(int i=12; i<strlen(payload)-2; i++)
@@ -165,7 +176,7 @@ char * operations(char * fname){
   //   //if(payload[i]!='"')
   //   pv[i]=payload[i];
   // }
-  printf("success....%s\n",payload);
+  printf("successfully transformed to json with data....%s\n",payload);
 
   return payload;
 }

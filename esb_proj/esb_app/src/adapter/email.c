@@ -2,8 +2,9 @@
 #include<string.h>
 
 
-void  emailsender(char *to,  char *text)
+int  emailsender(char *to,  char *text)
 {
+      int sent = 0;
      char cmd[1000];  // to hold the command.
      int len = strlen(text);
         char tempFile[len];     // name of tempfile.
@@ -19,7 +20,8 @@ void  emailsender(char *to,  char *text)
          printf("received=%s\n",text);
         sprintf(cmd,"ssmtp %s < %s",to,tmpfile); // prepare command.
          system(cmd);     // execute it.
+         sent =1;
+         return sent;
         
 }
-
 

@@ -2,6 +2,6 @@
 #define EMAIL_H
 
 
-void emailsender(char *to, char *text);
+int emailsender(char *to, char *text);
 
 #endif
