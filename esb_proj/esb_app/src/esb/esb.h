@@ -48,7 +48,7 @@ envelope * extract_envelop(char * bmd_xml);
 payload * extract_payload(char * bmd_xml);
 
 
-#define INSERT_IN_ESB_REQUEST "INSERT INTO esb_request(sender_id,dest_id,message_type,reference_id,message_id,received_on,status) VALUES ('%s','%s','%s','%s','%s','%s','%s');"
+#define INSERT_IN_ESB_REQUEST "INSERT INTO esb_request(sender_id,dest_id,message_type,reference_id,message_id,received_on,data_location,status) VALUES ('%s','%s','%s','%s','%s','%s','%s','%s');"
 #define CHECK_TRANSFORM "SELECT config_key, config_value FROM transform_config WHERE route_id = '%s';"
 #define CHECK_TRANSPORT "SELECT config_key, config_value FROM transport_config WHERE route_id = '%s';"
 

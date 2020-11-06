@@ -100,7 +100,11 @@ void thread_function(int sock_fd) {
     if(!(strcmp(st->Transport_value,"EMAIL")))
     {
         printf("payload=%s\n",pt);
-        emailsender(st->Transport_key,pt);
+        int emailsent = emailsender(st->Transport_key,pt);
+        if(emailsent == 1)
+        {
+            printf("Email sent to %s successfully\n",st->Transport_key);
+        }
 
     }
 
@@ -114,7 +118,7 @@ void thread_function(int sock_fd) {
             printf("The file has been succesfully transported via FTP server %s\n",URL);
         }
    }
-
+    
     close(sock_fd); /* break connection */
     log_msg("SERVER: thread_function: Done. Worker thread terminating.", false);
     pthread_exit(NULL); // Must be the last statement
@@ -186,5 +190,4 @@ int main() {
         return 0;
     
 }
-
 

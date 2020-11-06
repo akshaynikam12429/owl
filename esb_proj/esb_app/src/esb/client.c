@@ -51,4 +51,3 @@ int send_bmd_path_to_socket(char *msg, char *socket_file) {
 
 }
 
-

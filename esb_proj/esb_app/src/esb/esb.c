@@ -259,7 +259,7 @@ BMD * parse_bmd_xml(char* bmd_file_path) {
     return t1;
 }
 
-int queue_the_request(BMD * bmd)
+int queue_the_request(BMD * bmd, char * bmd_file_path)
 {
     int success = 1; // 1 => OK, -1 => Error cases
     /** 
@@ -322,7 +322,7 @@ int queue_the_request(BMD * bmd)
         bmd -> bmd_envelope -> MessageType,
         bmd -> bmd_envelope -> ReferenceID,
         bmd -> bmd_envelope -> MessageID,
-        received_on, status);
+        received_on, bmd_file_path, status);
 
     printf("\n\n%s\n\n", query1);
 
@@ -380,14 +380,11 @@ int queue_the_request(BMD * bmd)
     {
         // Step 3:
         
-        status = queue_the_request(bmd);
+        status = queue_the_request(bmd,bmd_file_path);
         //emailsender(bmd -> bmd_envelope -> Destination, bmd->bmd_payload->data);
         //printf("sending email....\nto:%s\ndata:%s\n",bmd->bmd_envelope->Destination,bmd->bmd_payload->data);//assuming email id is in destination of envelope
     }
-    // td->Transform_key = t1->Transform_key;
-    // td->Transform_value = t1->Transform_value;
-    // td->Transport_key = t1->Transport_key;
-    // td->Transport_value = t1->Transport_value;
+
     td->val=status;
 
     return td;

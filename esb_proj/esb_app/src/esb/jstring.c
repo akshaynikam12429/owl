@@ -34,7 +34,7 @@ int main()
 #include<json-c/json.h>
 #include "js.h"
 
-char *  getstr(void) {
+char *  getstr() {
 	FILE *fp;
 	char ch;
     int i=0;
@@ -51,7 +51,7 @@ char *  getstr(void) {
         i++;
     }
 	fclose(fp);
-
+    printf("buff=%d\n",i);
     char buffer[i];
     fp = fopen("xmlOutput.json","r");
 	fread(buffer, i, 1, fp);
