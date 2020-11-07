@@ -253,6 +253,8 @@ BMD * parse_bmd_xml(char* bmd_file_path) {
          t1->val=valid;        
     printf("valid=%d\n\n",valid);
 
+    mysql_free_result(resTf);
+    mysql_free_result(resTr);
     mysql_free_result(res);
     mysql_close(conn);
     
@@ -268,8 +270,8 @@ int queue_the_request(BMD * bmd, char * bmd_file_path)
      * as specified in Theory of Operation.
      */
 
-    MYSQL * conn;
-    MYSQL_RES * res;
+    MYSQL * con1;
+    MYSQL_RES * res1;
     MYSQL_ROW row;
 
     int8_t received_time[100]; // eg: "2020-08-12T05:18:00+0000";
@@ -293,7 +295,7 @@ int queue_the_request(BMD * bmd, char * bmd_file_path)
         j++;
     }
 
-    conn = mysql_init(NULL);
+    con1 = mysql_init(NULL);
     for (int i = 0,j=0; i < 19 ; i++) {
         received_on1[j] = received_on[i];
         if (received_on[i] == 'm') //test for character
@@ -305,8 +307,8 @@ int queue_the_request(BMD * bmd, char * bmd_file_path)
     }
     printf("\n\ntime==>%s\n\n", received_on);
     /* Connect to database */
-    if (!mysql_real_connect(conn, server, user, password, database, 0, NULL, 0)) {
-        printf("Failed to connect MySQL Server %s. Error: %s\n", server, mysql_error(conn));
+    if (!mysql_real_connect(con1, server, user, password, database, 0, NULL, 0)) {
+        printf("Failed to connect MySQL Server %s. Error: %s\n", server, mysql_error(con1));
         success = -1;
         return success;
     }
@@ -326,21 +328,19 @@ int queue_the_request(BMD * bmd, char * bmd_file_path)
 
     printf("\n\n%s\n\n", query1);
 
-    if (mysql_query(conn, query1)) {
-        printf("Failed to execute query.Error: %s\n", mysql_error(conn));
+    if (mysql_query(con1, query1)) {
+        printf("Failed to execute query.Error: %s\n", mysql_error(con1));
         success = -1;
         return success;
     }
-    // sprintf(query2, "SELECT * FROM `esb`.`esb_request`;");
-    // mysql_query(conn,query2);
-    // printf("\n\n%s\n\n",query2);
 
-    res = mysql_use_result(conn);
+    res1 = mysql_use_result(con1);
 
     /*free the result*/
 
-    mysql_free_result(res);
-    mysql_close(conn);
+
+    mysql_free_result(res1);
+    mysql_close(con1);
 
     //success = insert_in_esb_request(bmd);
 
@@ -381,8 +381,6 @@ int queue_the_request(BMD * bmd, char * bmd_file_path)
         // Step 3:
         
         status = queue_the_request(bmd,bmd_file_path);
-        //emailsender(bmd -> bmd_envelope -> Destination, bmd->bmd_payload->data);
-        //printf("sending email....\nto:%s\ndata:%s\n",bmd->bmd_envelope->Destination,bmd->bmd_payload->data);//assuming email id is in destination of envelope
     }
 
     td->val=status;

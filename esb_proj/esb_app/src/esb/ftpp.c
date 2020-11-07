@@ -39,16 +39,15 @@ static size_t read_callback(void *ptr, size_t size, size_t nmemb, void *stream)
 
   nread = (curl_off_t)retcode;
 
-  fprintf(stderr, "*** We read %" CURL_FORMAT_CURL_OFF_T
-          " bytes from file\n", nread);
+  fprintf(stderr, "*** The File has been read %" CURL_FORMAT_CURL_OFF_T
+          " bytes from file ***\n", nread);
   return retcode;
 }
 
 int send_ftp_file(char * REMOTE_URL)
 {
 
-  //char * REMOTE_URL;
-  //strcat(REMOTE_URL, UPLOAD_FILE_AS);
+  
   CURL *curl;
   CURLcode res;
   FILE *hd_src;
@@ -56,8 +55,7 @@ int send_ftp_file(char * REMOTE_URL)
   curl_off_t fsize;
 
   struct curl_slist *headerlist = NULL;
-  //static const char buf_1 [] = "RNFR " UPLOAD_FILE_AS;
-  //static const char buf_2 [] = "RNTO " RENAME_FILE_TO;
+
 
   /* get the file size of the local file */
   if(stat(LOCAL_FILE, &file_info)) {
@@ -78,8 +76,7 @@ int send_ftp_file(char * REMOTE_URL)
   curl = curl_easy_init();
   if(curl) {
     /* build a list of commands to pass to libcurl */
-    //headerlist = curl_slist_append(headerlist, buf_1);
-    //headerlist = curl_slist_append(headerlist, buf_2);
+ 
 
     /* we want to use our own read function */
     curl_easy_setopt(curl, CURLOPT_READFUNCTION, read_callback);

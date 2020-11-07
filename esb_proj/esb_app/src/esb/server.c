@@ -1,3 +1,15 @@
+/*
+To compile:
+    gcc   server.c esb.c ../adapter/email.c ../adapter/xmltojson.c ftpp.c -o ipc -Wall $(xml2-config --cflags) 
+    $(xml2-config --libs) -lxml2  $(mysql_config --cflags) $(mysql_config --libs) -lpthread -ljson-c -lcurl
+
+All in a single line
+
+to see output: ./ipc
+
+*/
+
+
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -17,8 +29,6 @@
 #include "server.h"
 #include "../adapter/transform.h"
 #include "ftp.h"
-#include "js.h"
-#include "server.h"
 
 extern TD * process_esb_request(char* bmd_file_path);
 bool create_worker_thread(int fd);
@@ -78,8 +88,8 @@ void thread_function(int sock_fd) {
     }
     
     char pth[50];
-    strcpy(pth,"../.");
-    strcat(pth,buffer);
+    strcpy(pth,"../.");             /* The file path is modified to locate the file properly in correct folder */   
+    strcat(pth,buffer);             /* Buffer contains the file path from client */
     printf("path==>%s\n",pth);
     TD * st = process_esb_request(pth);
 
@@ -88,19 +98,22 @@ void thread_function(int sock_fd) {
        printf("BMD file succesfully processed and stored\n");
    }
 
-    if(!(strcmp(st->Transform_key,"Json_file")&&!(strcmp(st->Transform_value,"json"))))
+    if(!(strcmp(st->Transform_key,"Json_file") && !(strcmp(st->Transform_value,"json"))))
     {
         const char * filp = transformjson(pth);
 
     }
+
+    BMD * bmd1 =  parse_bmd_xml(pth);
+   printf("payload in server = %s\n\n",bmd1->bmd_payload->data);
    
-   char * pt = getstr();
+   char * payloadString = bmd1->bmd_payload->data;     /* Payload data is stored */
 
 
     if(!(strcmp(st->Transport_value,"EMAIL")))
     {
-        printf("payload=%s\n",pt);
-        int emailsent = emailsender(st->Transport_key,pt);
+        printf("payload=%s\n",payloadString);
+        int emailsent = emailsender(st->Transport_key,payloadString);           /* email id and payload data is passed to email sender function */
         if(emailsent == 1)
         {
             printf("Email sent to %s successfully\n",st->Transport_key);
@@ -186,7 +199,7 @@ _Noreturn void start_server_socket(char *socket_file, int max_connects) {
 
 int main() {
   
-        start_server_socket("./my_sock", 10);
+        start_server_socket("./my_sock", 10);           /* start the sever before kodev build and kodev run */
         return 0;
     
 }
