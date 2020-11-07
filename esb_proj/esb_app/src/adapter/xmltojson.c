@@ -7,8 +7,7 @@
 #include "stdlib.h"
 #include "libxml/parser.h"
 #include "libxml/tree.h"
-//#include "split.h"
-#include "json-c/json.h" 
+#include <json-c/json.h> 
 #include<math.h>
 #include<time.h>
 
@@ -145,23 +144,7 @@ char * transformjson(char * fname){
   parsing(parsedInput,fname,".");
 
   const char * payload;
-  //char pv[50];
   
-
-  /*if(strcmp(parsedInput[2],"xml") == 0){
-    xmlName = malloc(strlen(fname)+1);
-    strcpy(xmlName, fname);
-    JSONroot_object = json_object_new_object();
-    readXML(xmlName,JSONroot_object);
-    payload = json_object_get_string(JSONroot_object);
-    //char **parsedIn=malloc(100);
-    //parsing(parsedIn,parsedInput[1],"/");
-    json_object_to_file(strcat(strcat(parsedInput[1],"Output"),".json"), JSONroot_object);
-    //payload=parsedIn[1];
-
-    free(xmlName);
-  }*/
-
   if(strcmp(parsedInput[2],"xml") == 0){
     xmlName = malloc(strlen(fname)+1);
     strcpy(xmlName, fname);
@@ -171,11 +154,7 @@ char * transformjson(char * fname){
     json_object_to_file(strcat(strcat(parsedInput[2],"Output"),".json"), JSONroot_object);
     free(xmlName);
   }
-  // for(int i=12; i<strlen(payload)-2; i++)
-  // {
-  //   //if(payload[i]!='"')
-  //   pv[i]=payload[i];
-  // }
+
   printf("successfully transformed to json with data....%s\n",payload);
 
   return payload;

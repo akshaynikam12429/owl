@@ -4,6 +4,7 @@
 
 int  emailsender(char *to,  char *text)
 {
+      printf("entering email func..\n");
       int sent = 0;
      char cmd[1000];  // to hold the command.
      int len = strlen(text);
