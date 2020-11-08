@@ -2,8 +2,11 @@
 #include "../test/munit.h"
 #include "stdlib.h"
 #include "esb.h"
-
-//gcc test_esb.c munit.c  esb.c  `mysql_config --cflags --libs` `xml2-config --cflags --libs` -o test_esb//for compilation----------
+#include<dirent.h>
+#include<string.h>
+#include "../adapter/email.h" 
+//#include"../adapter/xmltojson.c"
+//gcc test_esb.c ../test/munit.c  ../adapter/email.c esb.c  `mysql_config --cflags --libs` `xml2-config --cflags --libs` -o test_esb//for compilation----------
 
 /* This is just to disable an MSVC warning about conditional
  * expressions being constant, which you shouldn't have to do for your
@@ -22,7 +25,7 @@ static void * test_xml_values_setup(const MunitParameter params[], void *user_da
      * has to be cleaned up in corresponding tear down function,
      * which in this case is test_tear_down.
      */
-    return strdup("/home/mukesh/bmd.xml");
+    return strdup("/home/mukesh/xml_files/bmd.xml");
 }
 
 static void test_xml_values_tear_down(void *fixture)
@@ -36,38 +39,22 @@ static void test_xml_values_tear_down(void *fixture)
 static MunitResult test_xml_values(const MunitParameter params[], void* fixture) {
   char *path = (char *)fixture;
 
-  
-
- /*
-   * Possible values are:
-   *  - MUNIT_OK: Sucess
-   *  - MUNIT_FAIL: Failure
-   *  - MUNIT_SKIP: The test was skipped; usually this happens when a
-   *    particular feature isn't in use.  For example, if you're
-   *    writing a test which uses a Wayland-only feature, but your
-   *    application is running on X11.
-   *  - MUNIT_ERROR: The test failed, but not because of anything you
-   *    wanted to test.  For example, maybe your test downloads a
-   *    remote resource and tries to parse it, but the network was
-   *    down.
-   */
-  
-  
+ 
 
 
   BMD *test_bmd= parse_bmd_xml(path);
 
   printf("%s\n" ,test_bmd->bmd_envelope->MessageID);
 
-  if(strcmp(path,"/home/mukesh/bmd.xml")==0) { 
+  if(strcmp(path,"/home/mukesh/xml_files/bmd.xml")==0) { 
     munit_assert_string_equal(test_bmd->bmd_envelope->MessageID,"A049AEF2-107A-4452-9553-043B6D25386E");
-    munit_assert_string_equal(test_bmd->bmd_envelope->MessageType,"DebitReport");
+    munit_assert_string_equal(test_bmd->bmd_envelope->MessageType,"CreditReport");
     munit_assert_string_equal(test_bmd->bmd_envelope->Sender,"556E2EAA-1D5B-5BC0-BCC4-4CEB669408DA");
-    munit_assert_string_equal(test_bmd->bmd_envelope->Destination,"6323D82F-4687-433D-AA23-1966330381FE");
-    munit_assert_string_equal(test_bmd->bmd_envelope->CreationDateTime,"2020-08-12T05:18:00+0000");
+    munit_assert_string_equal(test_bmd->bmd_envelope->Destination,"8323D82F-4687-433D-AA23-1966330381FE");
+    munit_assert_string_equal(test_bmd->bmd_envelope->CreationDateTime,"2020-12-22T05:18:00+0000");
     munit_assert_string_equal(test_bmd->bmd_envelope->ReferenceID,"INV-PROFILE-889712");
     munit_assert_string_equal(test_bmd->bmd_envelope->Signature,"63f5f61f7a79301f715433f8f3689390d1f5da4f855169023300491c00b8113c");
-    munit_assert_string_equal(test_bmd->bmd_payload->data,"HDFC0007498");
+    munit_assert_string_equal(test_bmd->bmd_payload->data,"HDFC0007499");
     }
 
   
@@ -77,28 +64,20 @@ static MunitResult test_xml_values(const MunitParameter params[], void* fixture)
 }
 
 
-static void * test_bmd_valid_setup(const MunitParameter params[], void *user_data)
-{
-    
-    return strdup("/home/mukesh/bmd.xml");
-}
-
-static void test_bmd_valid_tear_down(void *fixture)
-{
-    free(fixture);
-}
 
 
 static MunitResult test_bmd_valid(const MunitParameter params[], void* fixture) {
-  char *path = (char *)fixture;
+  //char *path = (char *)fixture;
 
-  BMD *test_bmd= parse_bmd_xml(path);
+  BMD *test_bmd= parse_bmd_xml("/home/mukesh/xml_files/bmd2.xml");
 
   printf("%s\n" ,test_bmd->bmd_envelope->MessageID);
 
   
   //validation test
-  munit_assert_int(is_bmd_valid(test_bmd),==,1);
+  TD* temp =is_bmd_valid(test_bmd);
+  int val= temp->val;
+  munit_assert_int(val,==,1);
 
   
 
@@ -108,7 +87,7 @@ static MunitResult test_bmd_valid(const MunitParameter params[], void* fixture) 
 static MunitResult test_queue_request(const MunitParameter params[], void* fixture) {
   
 
-  BMD *test_bmd= parse_bmd_xml("/home/mukesh/bmd.xml");
+  BMD *test_bmd= parse_bmd_xml("/home/mukesh/xml_files/bmd.xml");
 
   printf("%s\n" ,test_bmd->bmd_envelope->MessageID);
 
@@ -121,21 +100,23 @@ static MunitResult test_queue_request(const MunitParameter params[], void* fixtu
   return MUNIT_OK;
 }
 
-
-static MunitResult test_process_esb_request(const MunitParameter params[], void* fixture) {
-  
-
- 
-
-  
-  
-  int status = process_esb_request("/home/mukesh/bmd.xml");
-  munit_assert_int(status,==,1);
-
-  
-
-  return MUNIT_OK;
+static MunitResult
+test_email_service(const MunitParameter params[], void * fixture) {
+    int status = emailsender("amruthy98@gmail.com", "/home/mukesh/xml_files/bmd.xml");
+    munit_assert_int(status, == , 1);
+    return MUNIT_OK;
 }
+
+// static MunitResult
+// test_transform(const MunitParameter params[], void * fixture) {
+//     char * status = transformjson("/home/mukesh/xml_files/bmd.xml");
+//  char* temp ="{"Payload":"HDFC0007499"}";
+//     if(strcmp(status,temp))return MUNIT_OK;;
+    
+//     //munit_assert_string_equal(status, "/home/mukesh/github/owl/esb_proj/esb_app/src/esb/xmlOutput.json");
+//     
+// }
+
 
 
 /* Creating a test suite is pretty simple.  First, you'll need an
@@ -144,11 +125,14 @@ static MunitTest esb_tests[] = {
   
   { (char*) "/test_xml_values", test_xml_values, test_xml_values_setup , test_xml_values_tear_down, MUNIT_TEST_OPTION_NONE, NULL},
    
-  { (char*) "/test_bmd_valid", test_bmd_valid, test_bmd_valid_setup , test_bmd_valid_tear_down, MUNIT_TEST_OPTION_NONE, NULL},
+   { (char*) "/test_bmd_valid", test_bmd_valid, NULL , NULL, MUNIT_TEST_OPTION_NONE, NULL},
 
   { (char*) "/test_queue_request",test_queue_request, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL },
 
-  { (char*) "/process_esb_request",test_process_esb_request, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL },
+  { (char*) "/test_email_service",test_email_service, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL },
+
+ // { (char*) "/test_transform",test_transform, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL },
+
 
   { NULL, NULL, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL }
 };
