@@ -4,7 +4,7 @@
 #include "esb.h"
 #include<stdbool.h>
 
-extern TD * process_esb_request(char* bmd_file_path);
+extern TD process_esb_request(char* bmd_file_path);
 extern char * transformjson(char * fname);
 extern int  emailsender(char *to,  char *text);
 extern int send_ftp_file(char * REMOTE_URL);

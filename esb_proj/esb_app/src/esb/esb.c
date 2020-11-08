@@ -108,12 +108,11 @@ BMD * parse_bmd_xml(char* bmd_file_path) {
     return bmd;
 }
 
- TD * is_bmd_valid(BMD * bmd)
+ TD  is_bmd_valid(BMD * bmd)
 {
-    TD *t1 = (TD *)(malloc(sizeof(TD *)));
+    TD t1;          //Declare a structure to store transport and transform data
     int valid = 0; // 1 => vaild, -1 => invalid
-    // TODO: Implement the validation logic here
-
+  
      MYSQL * conn;
     MYSQL_RES * res, * resTf, * resTr;
     MYSQL_ROW row, rowTf, rowTr;
@@ -164,12 +163,11 @@ BMD * parse_bmd_xml(char* bmd_file_path) {
 
     mysql_query(conn,"SELECT sender, destination, message_type, route_id FROM routes;");
     res = mysql_store_result(conn);
-    int num_fields = mysql_num_fields(res);
-    //printf("num=%d\n",num_fields);
-    //char st[num_fields];
+    int num_fields = mysql_num_fields(res); //Number of columns in database table
+
     char query2[5000], query3[5000];
     char * st;
-    //row = mysql_fetch_row(res);
+    
     while ((row = mysql_fetch_row(res)))
     {
         for(int i = 0; i < num_fields; i++)
@@ -185,7 +183,7 @@ BMD * parse_bmd_xml(char* bmd_file_path) {
            break;
            
         }
-       // printf("%s  ", row[i] ? row[i] : "NULL");
+      
         
         }
     }
@@ -202,8 +200,8 @@ BMD * parse_bmd_xml(char* bmd_file_path) {
                 if(((rowTf[0]!=NULL)) && ((rowTf[1]!=NULL) ))
                 {
                     printf("%s\t%s\n",rowTf[0],rowTf[1]);
-                    t1->Transform_key = rowTf[0];
-                    t1->Transform_value = rowTf[1];
+                    t1.Transform_key = rowTf[0];
+                    t1.Transform_value = rowTf[1];
                         valid = 1;
                        
                 }
@@ -232,8 +230,8 @@ BMD * parse_bmd_xml(char* bmd_file_path) {
                 if(((rowTr[0]!=NULL)) && ((rowTr[1]!=NULL) ))
                 {
                     printf("%s\t%s\n",rowTr[0],rowTr[1]);
-                    t1->Transport_key = rowTr[0];
-                    t1->Transport_value = rowTr[1];
+                    t1.Transport_key = rowTr[0];
+                    t1.Transport_value = rowTr[1];
                         valid = 1;
                        
                 }
@@ -250,7 +248,7 @@ BMD * parse_bmd_xml(char* bmd_file_path) {
     }
     
 
-         t1->val=valid;        
+         t1.val=valid;        
     printf("valid=%d\n\n",valid);
 
     mysql_free_result(resTf);
@@ -264,11 +262,6 @@ BMD * parse_bmd_xml(char* bmd_file_path) {
 int queue_the_request(BMD * bmd, char * bmd_file_path)
 {
     int success = 1; // 1 => OK, -1 => Error cases
-    /** 
-     * TODO: Insert the envelop data into esb_requests table,
-     * and implement other logic for enqueueing the request
-     * as specified in Theory of Operation.
-     */
 
     MYSQL * con1;
     MYSQL_RES * res1;
@@ -301,7 +294,7 @@ int queue_the_request(BMD * bmd, char * bmd_file_path)
         if (received_on[i] == 'm') //test for character
         {
             break;
-            //received_on[i] = ' '; // change T to space
+            
         }
         j++;
     }
@@ -316,7 +309,7 @@ int queue_the_request(BMD * bmd, char * bmd_file_path)
     /*sql query to insert in table*/
     char * status = "available";
     char query1[5000];
-    //char query2[5000];
+    
 
     sprintf(query1, INSERT_IN_ESB_REQUEST,
         bmd -> bmd_envelope -> Sender,
@@ -342,7 +335,7 @@ int queue_the_request(BMD * bmd, char * bmd_file_path)
     mysql_free_result(res1);
     mysql_close(con1);
 
-    //success = insert_in_esb_request(bmd);
+   
 
     return success;
 }
@@ -353,24 +346,19 @@ int queue_the_request(BMD * bmd, char * bmd_file_path)
  * This is the main entry point into the ESB. 
  * It will start processing of a BMD received at the HTTP endpoint.
  */
- TD * process_esb_request(char* bmd_file_path) {
-    TD *td = (TD *)(malloc(sizeof(TD *)));
+ TD  process_esb_request(char* bmd_file_path) {
+    TD td;  
     int status = 1; // 1 => OK, -ve => Errors
    
     printf("Handling the BMD file %s\n", bmd_file_path);
-    /** TODO: 
-     * Perform the steps outlined in the Theory of Operation section of
-     * the ESB specs document. Each major step should be implemented in
-     * a separate module. Suitable unit tests should be created for all
-     * the modules, including this one.
-     */
+    
     // Step 1:
     BMD * bmd;
    bmd = parse_bmd_xml(bmd_file_path);
 
    // Step 2:
     td = (is_bmd_valid(bmd)); 
-    if(td->val==0)
+    if(td.val==0)
     {
         //TODO: Process the error case
         printf("BMD is invalid!\n");
@@ -383,7 +371,7 @@ int queue_the_request(BMD * bmd, char * bmd_file_path)
         status = queue_the_request(bmd,bmd_file_path);
     }
 
-    td->val=status;
+    td.val=status;
 
-    return td;
+    return td;      // return the structure which contains all the transport and transform values
 }
