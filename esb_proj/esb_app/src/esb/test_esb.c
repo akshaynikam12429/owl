@@ -5,9 +5,11 @@
 #include<dirent.h>
 #include<string.h>
 #include "../adapter/email.h" 
-//#include"../adapter/xmltojson.c"
-//gcc test_esb.c ../test/munit.c  ../adapter/email.c esb.c  `mysql_config --cflags --libs` `xml2-config --cflags --libs` -o test_esb//for compilation----------
+#include "ftp.h"
+#include "http.h"
+#include"../adapter/transform.h"
 
+//gcc test_esb.c ../test/munit.c ftpp.c  esb.c http.c ../adapter/email.c ../adapter/xmltojson.c   `mysql_config --cflags --libs` `xml2-config --cflags --libs` -lcurl -ljson-c  -o test_esb
 /* This is just to disable an MSVC warning about conditional
  * expressions being constant, which you shouldn't have to do for your
  * code.  It's only here because we want to be able to do silly things
@@ -75,8 +77,8 @@ static MunitResult test_bmd_valid(const MunitParameter params[], void* fixture) 
 
   
   //validation test
-  TD* temp =is_bmd_valid(test_bmd);
-  int val= temp->val;
+  TD temp =is_bmd_valid(test_bmd);
+  int val= temp.val;
   munit_assert_int(val,==,1);
 
   
@@ -107,15 +109,22 @@ test_email_service(const MunitParameter params[], void * fixture) {
     return MUNIT_OK;
 }
 
-// static MunitResult
-// test_transform(const MunitParameter params[], void * fixture) {
-//     char * status = transformjson("/home/mukesh/xml_files/bmd.xml");
-//  char* temp ="{"Payload":"HDFC0007499"}";
-//     if(strcmp(status,temp))return MUNIT_OK;;
-    
-//     //munit_assert_string_equal(status, "/home/mukesh/github/owl/esb_proj/esb_app/src/esb/xmlOutput.json");
-//     
-// }
+
+
+static MunitResult
+test_ftp(const MunitParameter params[], void * fixture) {
+    int status = send_ftp_file("ftp://ftp1user:ambi@192.168.0.107/payload.son");
+    munit_assert_int(status, == , 1);
+    return MUNIT_OK;
+}
+
+static MunitResult
+test_http(const MunitParameter params[], void * fixture) {
+    int status = http_request("https://reqres.in/api/users", "HDFC0007499");
+    munit_assert_int(status, == , 1);
+    return MUNIT_OK;
+}
+
 
 
 
@@ -131,7 +140,10 @@ static MunitTest esb_tests[] = {
 
   { (char*) "/test_email_service",test_email_service, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL },
 
- // { (char*) "/test_transform",test_transform, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL },
+
+ { (char*) "/test_ftp",test_ftp, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL },
+
+ { (char*) "/test_http",test_http, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL },
 
 
   { NULL, NULL, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL }
