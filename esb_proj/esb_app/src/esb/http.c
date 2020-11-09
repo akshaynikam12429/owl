@@ -1,7 +1,3 @@
-/* <DESC>
- * simple HTTP POST using the easy interface
- * </DESC>
- */
 #include <stdio.h>
 #include <curl/curl.h>
 #include "http.h"
@@ -30,9 +26,7 @@ int http_request(const char * h_url, const char * msg)
   
   CURL *curl;
   CURLcode res;
-  //const char *data;
-   //strcpy(data, msg);
-  //data = "payload";
+ 
   /* In windows, this will init the winsock stuff */
   curl_global_init(CURL_GLOBAL_ALL);
 
@@ -53,6 +47,9 @@ int http_request(const char * h_url, const char * msg)
 
     long response;
     curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response);
+    /*
+     If Response from Http url is 2XX then Successful transport
+    */
     if(response >199 && response <300 )
     {
       printf("\nSuccesfully sent the request via HTTP, response code = %ld\n",response);

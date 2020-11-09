@@ -126,7 +126,7 @@ void thread_function(int sock_fd) {
    if(!(strcmp(st.Transport_value,"FTP")))
    {
         char * URL =st.Transport_key;
-        int ftpst = send_ftp_file(URL);
+        int ftpst = send_ftp_file(URL);         //url is obtained from db table
         if(ftpst==1)
         {
             printf("The file has been succesfully transported via FTP server %s\n",URL);
@@ -206,7 +206,7 @@ _Noreturn void start_server_socket(char *socket_file, int max_connects) {
             continue;
         }
 
-    }  /* while(1) */
+    }  
 }
 
 

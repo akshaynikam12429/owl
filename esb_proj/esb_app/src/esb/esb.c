@@ -36,11 +36,9 @@ static payload *get_payload_struct()
 }
 
 
-/**
- * TODO: This is to be implemented separately.
- */
+
 BMD * parse_bmd_xml(char* bmd_file_path) {
-    printf("file is entering parse func\n");
+    
     xmlDoc         *document;
     xmlNode        *root, *first_child, *node,*temp;
     char           *filename;
@@ -178,7 +176,6 @@ BMD * parse_bmd_xml(char* bmd_file_path) {
             printf("ID matched...\n");
             st = row[i+3];  //route id is stored 
             printf("route_id=>%s\n",st);
-            //st++;
            valid =1;
            break;
            
@@ -251,6 +248,7 @@ BMD * parse_bmd_xml(char* bmd_file_path) {
          t1.val=valid;        
     printf("valid=%d\n\n",valid);
 
+    /*free the result*/
     mysql_free_result(resTf);
     mysql_free_result(resTr);
     mysql_free_result(res);
@@ -298,7 +296,7 @@ int queue_the_request(BMD * bmd, char * bmd_file_path)
         }
         j++;
     }
-    printf("\n\ntime==>%s\n\n", received_on);
+    printf("\n\ntime==>%s\n\n", received_on);   //checking the time format
     /* Connect to database */
     if (!mysql_real_connect(con1, server, user, password, database, 0, NULL, 0)) {
         printf("Failed to connect MySQL Server %s. Error: %s\n", server, mysql_error(con1));
@@ -373,5 +371,5 @@ int queue_the_request(BMD * bmd, char * bmd_file_path)
 
     td.val=status;
 
-    return td;      // return the structure which contains all the transport and transform values
+    return td;      // return the structure which contains all the transport and transform data
 }

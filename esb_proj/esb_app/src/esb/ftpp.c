@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <string.h>
-
 #include <curl/curl.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -13,17 +12,10 @@
 #include <unistd.h>
 #endif
 
-/* <DESC>
- * Performs an FTP upload and renames the file just after a successful
- * transfer.
- * </DESC>
- */
 
-#define LOCAL_FILE      "/home/amruth/work/nho2020/owl/esb_proj/esb_app/src/esb/xmlOutput.json"
-//#define UPLOAD_FILE_AS  "payload.json"
-//#define REMOTE_URL      "ftp://ftp1user:ambi@192.168.0.107/"  
-//#define REMOTE_URL      "ftp://ftp1user@192.168.0.107/home/ftp1user/" UPLOAD_FILE_AS
-#define RENAME_FILE_TO  "recevied2.json."
+
+#define LOCAL_FILE      "/home/amruth/work/nho2020/owl/esb_proj/esb_app/src/esb/xmlOutput.json" //json transformed file 
+
 
 /* NOTE: if you want this example to work on Windows with libcurl as a
    DLL, you MUST also provide a read callback with CURLOPT_READFUNCTION.
@@ -88,9 +80,7 @@ int send_ftp_file(char * REMOTE_URL)
 
     /* specify target */
     curl_easy_setopt(curl, CURLOPT_URL, REMOTE_URL);
-    // curl_easy_setopt(curl, CURLOPT_USERNAME, "ftp1user");
-    // curl_easy_setopt(curl, CURLOPT_USERPWD, "ambi");
-    // curl_easy_setopt(curl, CURLOPT_PORT, 21);
+
     
     /* pass in that last of FTP commands to run after the transfer */
     curl_easy_setopt(curl, CURLOPT_POSTQUOTE, headerlist);
