@@ -37,7 +37,7 @@ static void test_xml_values_tear_down(void *fixture)
     free(fixture);
 }
 
-
+// For testing the bmd values
 static MunitResult test_xml_values(const MunitParameter params[], void* fixture) {
   char *path = (char *)fixture;
 
@@ -49,6 +49,7 @@ static MunitResult test_xml_values(const MunitParameter params[], void* fixture)
   printf("%s\n" ,test_bmd->bmd_envelope->MessageID);
 
   if(strcmp(path,"/home/mukesh/xml_files/bmd.xml")==0) { 
+    //compare each and every data of xml with the expected data
     munit_assert_string_equal(test_bmd->bmd_envelope->MessageID,"A049AEF2-107A-4452-9553-043B6D25386E");
     munit_assert_string_equal(test_bmd->bmd_envelope->MessageType,"CreditReport");
     munit_assert_string_equal(test_bmd->bmd_envelope->Sender,"556E2EAA-1D5B-5BC0-BCC4-4CEB669408DA");
@@ -67,7 +68,7 @@ static MunitResult test_xml_values(const MunitParameter params[], void* fixture)
 
 
 
-
+//For testing the validation of the BMD
 static MunitResult test_bmd_valid(const MunitParameter params[], void* fixture) {
   //char *path = (char *)fixture;
 
@@ -86,6 +87,8 @@ static MunitResult test_bmd_valid(const MunitParameter params[], void* fixture) 
   return MUNIT_OK;
 }
 
+
+//For testing the Queue request
 static MunitResult test_queue_request(const MunitParameter params[], void* fixture) {
   
 
@@ -102,6 +105,8 @@ static MunitResult test_queue_request(const MunitParameter params[], void* fixtu
   return MUNIT_OK;
 }
 
+
+//For testing the email service
 static MunitResult
 test_email_service(const MunitParameter params[], void * fixture) {
     int status = emailsender("amruthy98@gmail.com", "/home/mukesh/xml_files/bmd.xml");
@@ -110,7 +115,7 @@ test_email_service(const MunitParameter params[], void * fixture) {
 }
 
 
-
+//For testing the FTP service
 static MunitResult
 test_ftp(const MunitParameter params[], void * fixture) {
     int status = send_ftp_file("ftp://ftp1user:ambi@192.168.0.107/payload.son");
@@ -118,6 +123,7 @@ test_ftp(const MunitParameter params[], void * fixture) {
     return MUNIT_OK;
 }
 
+//For testing the HTTP service
 static MunitResult
 test_http(const MunitParameter params[], void * fixture) {
     int status = http_request("https://reqres.in/api/users", "HDFC0007499");
@@ -129,7 +135,7 @@ test_http(const MunitParameter params[], void * fixture) {
 
 
 /* Creating a test suite is pretty simple.  First, you'll need an
- * array of tests: */
+ * array of tests: Put all unit tests here. */
 static MunitTest esb_tests[] = {
   
   { (char*) "/test_xml_values", test_xml_values, test_xml_values_setup , test_xml_values_tear_down, MUNIT_TEST_OPTION_NONE, NULL},
