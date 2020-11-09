@@ -130,15 +130,14 @@ void readXML(char *xmlName, json_object *jsonRoot){
   else{
     root_element = xmlDocGetRootElement(doc);
     last_child=xmlLastElementChild(root_element);
-    xmlToJSON(last_child,jsonRoot);
+    xmlToJSON(last_child,jsonRoot);   
     xmlFreeDoc(doc);
   }
   xmlCleanupParser();
 }
 
 char * transformjson(char * fname){
-  
-  int i = 0;
+ 
   char **parsedInput = malloc(100);
 
   parsing(parsedInput,fname,".");
@@ -159,10 +158,3 @@ char * transformjson(char * fname){
 
   return payload;
 }
-
-/*int main(int argc, char *argv[]) {
-  operations(argc,argv);
-
-
-  return 0;
-}*/
