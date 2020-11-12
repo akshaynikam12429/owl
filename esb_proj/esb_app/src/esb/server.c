@@ -105,7 +105,7 @@ void thread_function(int sock_fd) {
     	log_msg("SERVER: thread_function: Done. Worker thread terminating.", false);
     	pthread_exit(NULL);
    }
-   
+   /*storing the content of structure in the string literals*/
     char *transport_key = malloc(strlen(st.Transport_key)+1);
     strcpy(transport_key,st.Transport_key);
     char *transport_value = malloc(strlen(st.Transport_value)+1);
@@ -116,14 +116,16 @@ void thread_function(int sock_fd) {
     strcpy(transform_key,st.Transform_key);
     printf("\n\n\nline 105 %s	%s	%s	%s\n\n\n",transport_key,transport_value,transform_value,transform_key);
     
-   char * filp;
-    if(!(strcmp(transform_value,"Json")))
+    char * filp;                           //declaraing the string variable
+    /*checking the transform value and respective transformation (xml to json or xml to csv) is done*/ 
+    if(!(strcmp(transform_value,"Json")))         //checking for Json as transform value
     {   
         filp = transformjson(pth);
         printf("\n\nfilp is : %s\n\n\n",filp);
 
     }
-   if(!(strcmp(transform_value,"CSV")))
+    
+   if(!(strcmp(transform_value,"CSV")))              //checking for CSV as transform value
     {    
          BMD * bmd1 =  parse_bmd_xml(pth);
          char * data=bmd1->bmd_payload->data;
@@ -131,7 +133,7 @@ void thread_function(int sock_fd) {
          char * content = transformCSV(data);         
          printf("\n\nfilename is : %s\n\n\n",content);
          
-         FILE * fp=fopen(content,"r");
+         FILE * fp=fopen(content,"r"); /* opening the local file and reading the content of it and storing it into the string*/
          int c,i=0;
          char buff[20]={0};
          while((c=fgetc(fp))!= EOF){
@@ -145,13 +147,9 @@ void thread_function(int sock_fd) {
     }
    
     
-   // printf("\n\nfilp is : %s\n\n\n",filp);
-    //BMD * bmd1 =  parse_bmd_xml(pth);
-   //printf("payload in server = %s\n\n",bmd1->bmd_payload->data);
-   
-   //char * payloadString = bmd1->bmd_payload->data;     /* Payload data is stored */
+  
 
-
+    /* sending file content via email*/  
     if(!(strcmp(transport_value,"email")))
     {
         printf("payload=%s\n",filp);
@@ -163,7 +161,7 @@ void thread_function(int sock_fd) {
 
     }
 
-   
+   /* sending file content via ftp*/
    if(!(strcmp(transport_value,"ftp")))
    {
         char * URL =transport_key;
@@ -174,7 +172,8 @@ void thread_function(int sock_fd) {
             printf("The file has been succesfully transported via FTP server %s\n",URL);
         }
    }
-
+   
+   /* sending file content via http*/
    if(!(strcmp(transport_value,"http")))
    {
        const char * url_http = transport_key;
