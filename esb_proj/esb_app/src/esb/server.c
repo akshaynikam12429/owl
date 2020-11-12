@@ -28,6 +28,7 @@ to see output: ./ipc
 #include <libxml/tree.h>
 #include "server.h"
 #include "../adapter/transform.h"
+#include "../adapter/transform_to_csv.h"
 #include "ftp.h"
 #include "http.h"
 
@@ -101,7 +102,7 @@ void thread_function(int sock_fd) {
     strcpy(transform_value,st.Transform_value);
     char *transform_key = malloc(strlen(st.Transform_key)+1);
     strcpy(transform_key,st.Transform_key);
-    printf("\n\n\n%s	%s	%s	%s\n\n\n",transport_key,transport_value,transform_value,transform_key);
+    printf("\n\n\nline 105 %s	%s	%s	%s\n\n\n",transport_key,transport_value,transform_value,transform_key);
    if(st.val==1)
    {
        printf("BMD file succesfully processed and stored\n");
@@ -112,13 +113,36 @@ void thread_function(int sock_fd) {
     	log_msg("SERVER: thread_function: Done. Worker thread terminating.", false);
     	pthread_exit(NULL);
    }
-   const char * filp;
-    if(!(strcmp(transform_key,"Json_file") && !(strcmp(transform_value,"Json"))))
+   char * filp;
+    if((strcmp(transform_value,"Json")))
     {
         filp = transformjson(pth);
+        printf("\n\nfilp is : %s\n\n\n",filp);
 
     }
-
+   if(!(strcmp(transform_value,"CSV")))
+    {    
+         BMD * bmd1 =  parse_bmd_xml(pth);
+         char * data=bmd1->bmd_payload->data;
+         printf("data is %s\n",data);
+         char * content = transformCSV(data);         
+         printf("\n\nfilename is : %s\n\n\n",content);
+         
+         FILE * fp=fopen(content,"r");
+         int c,i=0;
+         char buff[20]={0};
+         while((c=fgetc(fp))!= EOF){
+             buff[i]=c;
+             i++;
+         }
+         char * filp=buff;
+         printf("\n\nfilp is : %s\n\n\n",filp);
+         
+    
+    }
+   
+    
+   // printf("\n\nfilp is : %s\n\n\n",filp);
     //BMD * bmd1 =  parse_bmd_xml(pth);
    //printf("payload in server = %s\n\n",bmd1->bmd_payload->data);
    
