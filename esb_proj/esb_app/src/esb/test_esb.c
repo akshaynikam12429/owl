@@ -27,7 +27,7 @@ static void * test_xml_values_setup(const MunitParameter params[], void *user_da
      * has to be cleaned up in corresponding tear down function,
      * which in this case is test_tear_down.
      */
-    return strdup("/home/mukesh/xml_files/bmd.xml");
+    return strdup("/home/akshay/owl/esb_proj/esb_app/src/esb/bmd.xml");
 }
 
 static void test_xml_values_tear_down(void *fixture)
@@ -48,16 +48,16 @@ static MunitResult test_xml_values(const MunitParameter params[], void* fixture)
 
   printf("%s\n" ,test_bmd->bmd_envelope->MessageID);
 
-  if(strcmp(path,"/home/mukesh/xml_files/bmd.xml")==0) { 
+  if(strcmp(path,"/home/akshay/owl/esb_proj/esb_app/src/esb/bmd.xml")==0) { 
     //compare each and every data of xml with the expected data
-    munit_assert_string_equal(test_bmd->bmd_envelope->MessageID,"A049AEF2-107A-4452-9553-043B6D25386E");
+    munit_assert_string_equal(test_bmd->bmd_envelope->MessageID,"A9ECAEF2-107A-4452-9553-043B6D25386E");
     munit_assert_string_equal(test_bmd->bmd_envelope->MessageType,"CreditReport");
-    munit_assert_string_equal(test_bmd->bmd_envelope->Sender,"556E2EAA-1D5B-5BC0-BCC4-4CEB669408DA");
-    munit_assert_string_equal(test_bmd->bmd_envelope->Destination,"8323D82F-4687-433D-AA23-1966330381FE");
-    munit_assert_string_equal(test_bmd->bmd_envelope->CreationDateTime,"2020-12-22T05:18:00+0000");
+    munit_assert_string_equal(test_bmd->bmd_envelope->Sender,"756E2EAA-1D5B-4BC0-ACC4-4CEB66940");
+    munit_assert_string_equal(test_bmd->bmd_envelope->Destination,"6393F82F-4687-433D-AA23-196633081FE");
+    munit_assert_string_equal(test_bmd->bmd_envelope->CreationDateTime,"2020-08-12T05:18:00+0000");
     munit_assert_string_equal(test_bmd->bmd_envelope->ReferenceID,"INV-PROFILE-889712");
     munit_assert_string_equal(test_bmd->bmd_envelope->Signature,"63f5f61f7a79301f715433f8f3689390d1f5da4f855169023300491c00b8113c");
-    munit_assert_string_equal(test_bmd->bmd_payload->data,"HDFC0007499");
+    munit_assert_string_equal(test_bmd->bmd_payload->data,"Hello");
     }
 
   
@@ -67,12 +67,25 @@ static MunitResult test_xml_values(const MunitParameter params[], void* fixture)
 }
 
 
+//for xml to json function
+static MunitResult test_transform(const MunitParameter params[], void* fixture) {
+  char * filp =transformjson("../../bmd_files/1605153008/bmd1.xml");
+  printf("\n\nfilp is : %s\n\n\n",filp);
+  munit_assert_string_equal(filp,"{\"Payload\":\"Hello\"}");
+  return MUNIT_OK;
+}
+
+
+
+
+
+
 
 //For testing the validation of the BMD
 static MunitResult test_bmd_valid(const MunitParameter params[], void* fixture) {
   //char *path = (char *)fixture;
 
-  BMD *test_bmd= parse_bmd_xml("/home/mukesh/xml_files/bmd2.xml");
+  BMD *test_bmd= parse_bmd_xml("/home/akshay/owl/esb_proj/esb_app/src/esb/bmd.xml");
 
   printf("%s\n" ,test_bmd->bmd_envelope->MessageID);
 
@@ -92,7 +105,7 @@ static MunitResult test_bmd_valid(const MunitParameter params[], void* fixture) 
 static MunitResult test_queue_request(const MunitParameter params[], void* fixture) {
   
 
-  BMD *test_bmd= parse_bmd_xml("/home/mukesh/xml_files/bmd.xml");
+  BMD *test_bmd= parse_bmd_xml("/home/akshay/owl/esb_proj/esb_app/src/esb/bmd.xml");
 
   printf("%s\n" ,test_bmd->bmd_envelope->MessageID);
 
@@ -109,7 +122,7 @@ static MunitResult test_queue_request(const MunitParameter params[], void* fixtu
 //For testing the email service
 static MunitResult
 test_email_service(const MunitParameter params[], void * fixture) {
-    int status = emailsender("amruthy98@gmail.com", "/home/mukesh/xml_files/bmd.xml");
+    int status = emailsender("akshaynikam12429@gmail.com", "bmd.xml");
     munit_assert_int(status, == , 1);
     return MUNIT_OK;
 }
@@ -118,7 +131,7 @@ test_email_service(const MunitParameter params[], void * fixture) {
 //For testing the FTP service
 static MunitResult
 test_ftp(const MunitParameter params[], void * fixture) {
-    int status = send_ftp_file("ftp://ftp1user:ambi@192.168.0.107/payload.son");
+    int status = send_ftp_file("ftp://akshaynikam@192.168.0.100/payload.json");
     munit_assert_int(status, == , 1);
     return MUNIT_OK;
 }
@@ -126,7 +139,7 @@ test_ftp(const MunitParameter params[], void * fixture) {
 //For testing the HTTP service
 static MunitResult
 test_http(const MunitParameter params[], void * fixture) {
-    int status = http_request("https://reqres.in/api/users", "HDFC0007499");
+    int status = http_request("http://10.0.2.15", "Hello");
     munit_assert_int(status, == , 1);
     return MUNIT_OK;
 }
@@ -137,6 +150,7 @@ test_http(const MunitParameter params[], void * fixture) {
 /* Creating a test suite is pretty simple.  First, you'll need an
  * array of tests: Put all unit tests here. */
 static MunitTest esb_tests[] = {
+  
   
   { (char*) "/test_xml_values", test_xml_values, test_xml_values_setup , test_xml_values_tear_down, MUNIT_TEST_OPTION_NONE, NULL},
    
@@ -150,6 +164,10 @@ static MunitTest esb_tests[] = {
  { (char*) "/test_ftp",test_ftp, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL },
 
  { (char*) "/test_http",test_http, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL },
+ 
+ { (char*) "/test_transform",test_transform, NULL,NULL,MUNIT_TEST_OPTION_NONE, NULL },
+ 
+ 
 
 
   { NULL, NULL, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL }
