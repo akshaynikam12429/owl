@@ -94,15 +94,7 @@ void thread_function(int sock_fd) {
     strcat(pth,buffer);             /* Buffer contains the file path from client */
     printf("path==>%s\n",pth);
     TD st = process_esb_request(pth);
-    char *transport_key = malloc(strlen(st.Transport_key)+1);
-    strcpy(transport_key,st.Transport_key);
-    char *transport_value = malloc(strlen(st.Transport_value)+1);
-    strcpy(transport_value,st.Transport_value);
-    char *transform_value = malloc(strlen(st.Transform_value)+1);
-    strcpy(transform_value,st.Transform_value);
-    char *transform_key = malloc(strlen(st.Transform_key)+1);
-    strcpy(transform_key,st.Transform_key);
-    printf("\n\n\nline 105 %s	%s	%s	%s\n\n\n",transport_key,transport_value,transform_value,transform_key);
+
    if(st.val==1)
    {
        printf("BMD file succesfully processed and stored\n");
@@ -113,9 +105,20 @@ void thread_function(int sock_fd) {
     	log_msg("SERVER: thread_function: Done. Worker thread terminating.", false);
     	pthread_exit(NULL);
    }
+   
+    char *transport_key = malloc(strlen(st.Transport_key)+1);
+    strcpy(transport_key,st.Transport_key);
+    char *transport_value = malloc(strlen(st.Transport_value)+1);
+    strcpy(transport_value,st.Transport_value);
+    char *transform_value = malloc(strlen(st.Transform_value)+1);
+    strcpy(transform_value,st.Transform_value);
+    char *transform_key = malloc(strlen(st.Transform_key)+1);
+    strcpy(transform_key,st.Transform_key);
+    printf("\n\n\nline 105 %s	%s	%s	%s\n\n\n",transport_key,transport_value,transform_value,transform_key);
+    
    char * filp;
-    if((strcmp(transform_value,"Json")))
-    {
+    if(!(strcmp(transform_value,"Json")))
+    {   
         filp = transformjson(pth);
         printf("\n\nfilp is : %s\n\n\n",filp);
 
@@ -135,7 +138,7 @@ void thread_function(int sock_fd) {
              buff[i]=c;
              i++;
          }
-         char * filp=buff;
+         filp=buff;
          printf("\n\nfilp is : %s\n\n\n",filp);
          
     
