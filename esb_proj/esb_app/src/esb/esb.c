@@ -11,9 +11,9 @@
 
 
 static char *server = "localhost";
-static char *user = "root";
-static char *password = "my sql";
-static char *database = "esb";
+static char *user = "akshaynikam";
+static char *password = "Akshay@123";
+static char *database = "esb_db";
 
 unsigned int port = 3306;
 static char *unix_socket = NULL;
