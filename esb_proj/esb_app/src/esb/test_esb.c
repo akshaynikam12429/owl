@@ -8,6 +8,7 @@
 #include "ftp.h"
 #include "http.h"
 #include"../adapter/transform.h"
+#include "../adapter/transform_to_csv.h"
 
 //gcc test_esb.c ../test/munit.c ftpp.c  esb.c http.c ../adapter/email.c ../adapter/xmltojson.c   `mysql_config --cflags --libs` `xml2-config --cflags --libs` -lcurl -ljson-c  -o test_esb
 /* This is just to disable an MSVC warning about conditional
@@ -75,7 +76,14 @@ static MunitResult test_transform(const MunitParameter params[], void* fixture) 
   return MUNIT_OK;
 }
 
-
+//for xml to csv function
+static MunitResult test_CSVtransform(const MunitParameter params[], void* fixture) {
+  BMD *test_bmd= parse_bmd_xml("/home/akshay/owl/esb_proj/esb_app/src/esb/bmd.xml");
+  char * filp =transformCSV("test_bmd->bmd_payload->data");
+  printf("\n\nfilp is : %s\n\n\n",filp);
+  munit_assert_string_equal(filp,"payload_data.csv");
+  return MUNIT_OK;
+}
 
 
 
@@ -166,6 +174,8 @@ static MunitTest esb_tests[] = {
  { (char*) "/test_http",test_http, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL },
  
  { (char*) "/test_transform",test_transform, NULL,NULL,MUNIT_TEST_OPTION_NONE, NULL },
+ 
+ { (char*) "/test_CSVtransform",test_CSVtransform, NULL,NULL,MUNIT_TEST_OPTION_NONE, NULL },
  
  
 
