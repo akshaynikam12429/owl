@@ -46,6 +46,7 @@ BMD * process_xml(char * );
 int check_if_string_is_guid(const unsigned char * value);
 envelope * extract_envelop(char * bmd_xml);
 payload * extract_payload(char * bmd_xml);
+ TD  is_bmd_valid(BMD * bmd);
 
 
 #define INSERT_IN_ESB_REQUEST "INSERT INTO esb_request(sender_id,dest_id,message_type,reference_id,message_id,received_on,data_location,status) VALUES ('%s','%s','%s','%s','%s','%s','%s','%s');"
