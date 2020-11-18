@@ -1,0 +1,59 @@
+<BMD>
+<Envelop>
+<!-- This is a GUID -->
+<MessageID>MKSB44AA5-227S-4888-9444-044551A521SW</MessageID>
+<!-- A message type is a unique name (string) -->
+<MessageType>DeditReport</MessageType>
+<!-- Sender is identified by a GUID -->
+<Sender>AMK44AA-1D5B-44A0-ACC4-1414AAA11A</Sender>
+<!-- Destination is identified by a GUID -->
+<Destination>ZZFE382F-4547-4331-DD23-13F3A4SWE01</Destination>
+<CreationDateTime>2020-01-01T02:04:05+0000</CreationDateTime>
+<!-- SHA256 hash. Following example value is for 'nho2020' -->
+<Signature>41414Ssdf9301f715433f8f368151898985</Signature>
+<!-- A caller specific correlation ID. It can be an arbitrary string. -->
+<ReferenceID>INV-PROFILE-884881</ReferenceID>
+<!-- User defined custom data attributes which may be used for handling
+this message. -->
+<UserProperties>
+<key1>Value1</key1>
+<key2>Value2</key2>
+</UserProperties>
+</Envelop>
+<!-- In case the payload is character data, then put it as
+CDATA here. Otherwise, the data may also be put directly under
+the Payload element, as long as it is a well-formed XML. -->
+<Payload>
+  <charttitle>Monthly Sales</charttitle>
+  <canvas>
+    <length>200</length>
+    <width>200</width>
+    <backcolor>AABBCC</backcolor>
+  </canvas>
+  <Xset>
+    <xdata>January</xdata>
+    <xdata>February</xdata>
+    <xdata>March</xdata>
+    <xdata>April</xdata>
+    <xdata>May</xdata>
+    <xdata>June</xdata>
+  </Xset>
+  <Yset unit="TL" name="İzmir" showvalue="yes" fillcolor="FFCCDD">
+    <ydata>1200</ydata>
+    <ydata>1500</ydata>
+    <ydata>7500</ydata>
+    <ydata>4200</ydata>
+    <ydata>5600</ydata>
+    <ydata>2200</ydata>
+  </Yset>
+  <Yset unit="TL" name="İstanbul" fillcolor="00CCDD">
+    <ydata>9500</ydata>
+    <ydata>6500</ydata>
+    <ydata>11250</ydata>
+    <ydata>3200</ydata>
+    <ydata>5600</ydata>
+    <ydata>4200</ydata>
+  </Yset>
+</Payload>
+</BMD>
+

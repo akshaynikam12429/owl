@@ -14,7 +14,7 @@
 
 
 
-#define LOCAL_FILE      "/home/amruth/work/nho2020/owl/esb_proj/esb_app/src/esb/xmlOutput.json" //json transformed file 
+#define LOCAL_FILE      "xmlOutput.json" //json transformed file 
 
 
 /* NOTE: if you want this example to work on Windows with libcurl as a
@@ -94,7 +94,10 @@ int send_ftp_file(char * REMOTE_URL)
        make sure that to pass in a type 'long' argument. */
     curl_easy_setopt(curl, CURLOPT_INFILESIZE_LARGE,
                      (curl_off_t)fsize);
-
+    curl_easy_setopt(curl, CURLOPT_INFILESIZE_LARGE,(curl_off_t)fsize);
+    curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
+    curl_easy_setopt(curl, CURLOPT_USERPWD, "akshaynikam:71@aks@95");       //username and password of ftp server  
+    curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L); 
     /* Now run off and do what you've been told! */
     res = curl_easy_perform(curl);
     /* Check for errors */

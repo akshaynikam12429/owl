@@ -1,0 +1,27 @@
+<BMD>
+<Envelop>
+<!-- This is a GUID -->
+<MessageID>SSSM4AEF2-107A-4452-9553-043B6D25386E</MessageID>
+<!-- A message type is a unique name (string) -->
+<MessageType>DeditReport</MessageType>
+<!-- Sender is identified by a GUID -->
+<Sender>866E2EAA-1D5B-4BC0-ACC4-4C454ALMK</Sender>
+<!-- Destination is identified by a GUID -->
+<Destination>4853F82F-4547-4331-DD23-13F3A0381FJ</Destination>
+<CreationDateTime>2018-01-11T07:30:22+0000</CreationDateTime>
+<!-- SHA256 hash. Following example value is for 'nho2020' -->
+<Signature>84545sdf9301f715433f8f3689390d1f5da5</Signature>
+<!-- A caller specific correlation ID. It can be an arbitrary string. -->
+<ReferenceID>INV-PROFILE-884785</ReferenceID>
+<!-- User defined custom data attributes which may be used for handling
+this message. -->
+<UserProperties>
+<key1>Value1</key1>
+<key2>Value2</key2>
+</UserProperties>
+</Envelop>
+<!-- In case the payload is character data, then put it as
+CDATA here. Otherwise, the data may also be put directly under
+the Payload element, as long as it is a well-formed XML. -->
+<Payload>Hello World....!!</Payload>
+</BMD>
